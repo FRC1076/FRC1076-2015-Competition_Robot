@@ -8,7 +8,4 @@ public class Manipulator{
 		this.robot = r;
 	}
 	
-	public void doStuff(){
-		//Do Stuff
-	}
 }

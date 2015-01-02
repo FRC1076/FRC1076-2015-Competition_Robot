@@ -1,6 +1,7 @@
 package org.pihisamurai;
 
 public class Teleoperated implements RobotMode {
+
 	private Robot robot;
 	public HumanControl humanControl;
 	public DriverStationGUI GUI;
@@ -14,8 +15,6 @@ public class Teleoperated implements RobotMode {
 	public void run() {
 		while (true) {
 			GUI.update();
-			robot.drivetrain.setSpeed(humanControl.getLeftSpeed(),
-					humanControl.getRightSpeed());
 			robot.sleep(10);
 		}
 	}

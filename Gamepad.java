@@ -12,12 +12,13 @@ import edu.wpi.first.wpilibj.DriverStation;
  *
  * @author PiHi Samurai 1076
  */
+
 public class Gamepad extends Joystick{
+
     static final int LEFT_BUMPER = 5;
     static final int RIGHT_BUMPER = 6;
     static final int LEFT_TRIGGER = 7;
-    static final int RIGHT_TRIGGER = 8;
-    
+    static final int RIGHT_TRIGGER = 8;    
     
     static final int F310_A = 1;
     static final int F310_B = 2;
@@ -34,10 +35,6 @@ public class Gamepad extends Joystick{
     static final int F310_RIGHT_X = 4;
     static final int F310_TRIGGER_AXIS = 3;
     static final int F310_DPAD_X_AXIS = 6;
- 
-
-    
-    
     
     int port;
     DriverStation driverStation;
@@ -50,25 +47,30 @@ public class Gamepad extends Joystick{
     double getLeftX(){
         return getRawAxis(F310_LEFT_X);
     }
+
     double getLeftY(){
         return getRawAxis(F310_LEFT_Y);
     }
+
     double getRightX(){
         return getRawAxis(F310_RIGHT_X);
     }
+
     double getRightY(){
         return getRawAxis(F310_RIGHT_Y);
     }
+
     public double getRawAxis(int axis){
             return driverStation.getStickAxis(port, axis);
     }
     
-    //???
-    boolean getNumberedButton(int button){
+    //These aren't called anywhere in this project.
+    /*boolean getNumberedButton(int button){
         return ((0x1 << (button-1)) & driverStation.getStickButtons(port)) != 0;
     }
     
     public boolean getButtonA(){
         return getNumberedButton(1);
-    }
+    }*/
+
 }

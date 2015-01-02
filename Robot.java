@@ -3,6 +3,7 @@ package org.pihisamurai;
 //Missing imports
 
 public class Robot extends SimpleRobot {
+
 	// Common Code
 	public Drivetrain drivetrain = new Drivetrain(this);
 	public Manipulator manipulator = new Manipulator(this);
