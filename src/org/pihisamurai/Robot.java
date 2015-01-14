@@ -1,8 +1,8 @@
 package org.pihisamurai;
 
-//Missing imports
+import edu.wpi.first.wpilibj.SampleRobot;
 
-public class Robot extends SimpleRobot {
+public class Robot extends SampleRobot {
 
 	// Common Code
 	public Drivetrain drivetrain = new Drivetrain(this);
