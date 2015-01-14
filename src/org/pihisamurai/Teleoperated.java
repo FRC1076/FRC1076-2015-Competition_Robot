@@ -1,5 +1,7 @@
 package org.pihisamurai;
 
+import edu.wpi.first.wpilibj.Jaguar;
+
 public class Teleoperated implements RobotMode {
 
 	private Robot robot;
@@ -12,6 +14,7 @@ public class Teleoperated implements RobotMode {
 		GUI = new DriverStationGUI(robot);
 	}
 
+	Jaguar motorTest = new Jaguar(1);
 	public void run() {
 		while (true) {
 			GUI.update();
