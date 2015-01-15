@@ -17,10 +17,6 @@ public class Teleoperated implements RobotMode {
 		
 	}
 
-	Jaguar LeftMotor = new Jaguar(0); //assumed positions of motors (will talk to Samuel about actual locations)
-	Jaguar RightMotor = new Jaguar(1);
-	Jaguar StrafeMotor = new Jaguar(2);
-
 	double LeftSpeed, RightSpeed;
 	public void run() {
 			GUI.update();//getting gamepad input
@@ -31,20 +27,18 @@ public class Teleoperated implements RobotMode {
 			
 			if (LeftTrigger && RightTrigger == false) //controlling central motor based on triggers
 			{
-				StrafeMotor.set(-0.25);
+				robot.drivetrain.strafePower(-0.25);
 			}
 			else if (RightTrigger && LeftTrigger == false)
 			{
-				StrafeMotor.set(0.25);
+				robot.drivetrain.strafePower(0.25);
 			}
 			else
 			{
-				StrafeMotor.set(0);
+				robot.drivetrain.strafePower(0);
 			}
-			
-			LeftMotor.set(LeftSpeed); //joystick input setting motor speed
-			RightMotor.set(RightSpeed); 
-	
+			robot.drivetrain.leftPower(LeftSpeed);
+			robot.drivetrain.rightPower(RightSpeed);
 		}
 	
 }
