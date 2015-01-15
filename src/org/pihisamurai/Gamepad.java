@@ -65,12 +65,12 @@ public class Gamepad extends Joystick{
     }
     
     //These aren't called anywhere in this project.
-    /*boolean getNumberedButton(int button){
+   boolean getNumberedButton(int button){
         return ((0x1 << (button-1)) & driverStation.getStickButtons(port)) != 0;
     }
     
     public boolean getButtonA(){
         return getNumberedButton(1);
-    }*/
+    }
 
 }
