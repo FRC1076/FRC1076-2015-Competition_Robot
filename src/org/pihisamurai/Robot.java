@@ -1,40 +1,66 @@
 package org.pihisamurai;
 
-import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.IterativeRobot;
 
-public class Robot extends SampleRobot {
+public class Robot extends IterativeRobot {
 
 	// Common Code
-	public Drivetrain drivetrain = new Drivetrain(this);
-	public Manipulator manipulator = new Manipulator(this);
+	public Drivetrain drivetrain;
+	public Manipulator manipulator;
 
 	// Modes
-	public Teleoperated teleoperated = new Teleoperated(this);
-	public Test test = new Test(this);
-	public Autonomous autonomous = new Autonomous(this);
+	public Teleoperated teleop;
+	public Test test;
+	public Autonomous autonomous;
+	public Disabled disabled;
 
-	public Gamepad gamepad = new Gamepad(1);
+	public Gamepad gamepad;
 
-	public void autonomous() {
+	public void robotInit(){
+		System.out.println("Robot Code Started");
+		drivetrain = new Drivetrain(this);
+		manipulator = new Manipulator(this);
+		teleop = new Teleoperated(this);
+		test = new Test(this);
+		autonomous = new Autonomous(this);
+		disabled = new Disabled(this);
+		gamepad = new Gamepad(1);
+	}
+	
+	public void disabledInit(){
+		System.out.println("Robot Disabled");
+		disabled.init();
+	}
+	
+	public void disabledPeriodic(){
+		disabled.run();
+	}
+	
+	public void autonomousInit() {
 		System.out.println("Autonomous Mode");
+		autonomous.init();
+	}
+	
+	//Called about every 20ms during Autonmous Mode
+	public void autonomousPeriodic(){
 		autonomous.run();
 	}
 
-	public void operatorControl() {
+	public void teleopInit() {
 		System.out.println("Teleoperated Mode");
-		teleoperated.run();
+		teleop.run();
+	}
+	
+	public void teleopPeriodic(){
+		teleop.run();
 	}
 
-	public void test() {
+	public void testInit() {
 		System.out.println("Test Mode");
-		test.run();
+		test.init();
 	}
-
-	public void sleep(long milis) {
-		try {
-			Thread.sleep(milis);
-		} catch (InterruptedException ex) {
-			ex.printStackTrace();
-		}
+	
+	public void testPeriodic(){
+		test.run();
 	}
 }

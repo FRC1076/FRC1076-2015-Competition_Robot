@@ -1,10 +1,10 @@
 package org.pihisamurai;
 
-public class Autonomous implements RobotMode{
+public class Disabled implements RobotMode{
 
 	private Robot robot;
 	
-	public Autonomous(Robot r){
+	public Disabled(Robot r){
 		this.robot = r;
 	}
 	

@@ -14,11 +14,10 @@ public class Teleoperated implements RobotMode {
 		GUI = new DriverStationGUI(robot);
 	}
 
-	Jaguar motorTest = new Jaguar(1);
+	public void init(){
+		
+	}
 	public void run() {
-		while (true) {
-			GUI.update();
-			robot.sleep(10);
-		}
+		GUI.update();
 	}
 }
