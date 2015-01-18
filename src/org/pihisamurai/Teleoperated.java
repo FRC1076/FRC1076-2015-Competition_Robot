@@ -10,7 +10,7 @@ public class Teleoperated implements RobotMode {
 
 	public Teleoperated(Robot r) {
 		this.robot = r;
-		GUI = new DriverStationGUI(robot);
+		GUI = new DriverStationGUI(r);
 	}
 	
 	public void init(){
@@ -19,26 +19,26 @@ public class Teleoperated implements RobotMode {
 
 	double LeftSpeed, RightSpeed;
 	public void run() {
-			GUI.update();//getting gamepad input
-			LeftSpeed = robot.gamepad.getLeftY();//left joystick
-			RightSpeed = robot.gamepad.getRightY();//right joystick
-			boolean LeftTrigger = robot.gamepad.getNumberedButton( robot.gamepad.LEFT_TRIGGER);
-			boolean RightTrigger = robot.gamepad.getNumberedButton( robot.gamepad.RIGHT_TRIGGER);
-			
-			if (LeftTrigger && RightTrigger == false) //controlling central motor based on triggers
+			GUI.update(); //getting gamepad input
+			this.LeftSpeed = robot.gamepad.getLeftY();//left joystick
+			this.RightSpeed = robot.gamepad.getRightY();//right joystick
+			double LeftTrigger = robot.gamepad.getRawAxis(robot.gamepad.F310_LEFT_TRIGGER_AXIS);
+			double RightTrigger = robot.gamepad.getRawAxis(robot.gamepad.F310_RIGHT_TRIGGER_AXIS);
+			robot.drivetrain.strafePower(LeftTrigger - RightTrigger);
+			if(robot.gamepad.getPOV() == 0)
 			{
-				robot.drivetrain.strafePower(-0.25);
+				robot.drivetrain.liftPower(0.5);
 			}
-			else if (RightTrigger && LeftTrigger == false)
+			else if(robot.gamepad.getPOV() == 180)
 			{
-				robot.drivetrain.strafePower(0.25);
+				robot.drivetrain.liftPower(-0.5);
 			}
 			else
 			{
-				robot.drivetrain.strafePower(0);
+				robot.drivetrain.liftPower(0);
 			}
-			robot.drivetrain.leftPower(LeftSpeed);
-			robot.drivetrain.rightPower(RightSpeed);
+			this.robot.drivetrain.leftPower(LeftSpeed);
+			this.robot.drivetrain.rightPower(RightSpeed);
 		}
 	
 }

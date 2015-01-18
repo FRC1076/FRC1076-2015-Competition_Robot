@@ -36,8 +36,6 @@ public class Gamepad extends Joystick {
 
 	static final int LEFT_BUMPER = 5;
 	static final int RIGHT_BUMPER = 6;
-	static final int LEFT_TRIGGER = 7; // AGAIN MAY HAVE CHANGED
-	static final int RIGHT_TRIGGER = 8;
 
 	static final int F310_A = 1;
 	static final int F310_B = 2;
@@ -48,11 +46,12 @@ public class Gamepad extends Joystick {
 	static final int F310_L_BACK = 7;
 	static final int F310_R_START = 8;
 
-	static final int F310_LEFT_Y = 2;
-	static final int F310_LEFT_X = 1; // THEESE MAY HAVE CHANGED
+	static final int F310_LEFT_X = 0;
+	static final int F310_LEFT_Y = 1; // Corrected these.
+	static final int F310_LEFT_TRIGGER_AXIS = 2;
+	static final int F310_RIGHT_TRIGGER_AXIS = 3;
 	static final int F310_RIGHT_Y = 5;
 	static final int F310_RIGHT_X = 4;
-	static final int F310_TRIGGER_AXIS = 3;
 	static final int F310_DPAD_X_AXIS = 6;
 
 	int port;

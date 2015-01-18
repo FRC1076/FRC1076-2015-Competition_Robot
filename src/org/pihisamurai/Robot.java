@@ -24,7 +24,7 @@ public class Robot extends IterativeRobot {
 		test = new Test(this);
 		autonomous = new Autonomous(this);
 		disabled = new Disabled(this);
-		gamepad = new Gamepad(1);
+		gamepad = new Gamepad(0); // Changed from 1 to 0
 	}
 	
 	public void disabledInit(){
@@ -41,7 +41,7 @@ public class Robot extends IterativeRobot {
 		autonomous.init();
 	}
 	
-	//Called about every 20ms during Autonmous Mode
+	//Called about every 20ms during Autonomous Mode
 	public void autonomousPeriodic(){
 		autonomous.run();
 	}
