@@ -1,6 +1,6 @@
 package org.pihisamurai;
 
-public class Test implements RobotMode{
+public class Test implements RobotMode {
 	private Robot robot;
 
 	public Test(Robot r) {
@@ -10,9 +10,9 @@ public class Test implements RobotMode{
 	public void run() {
 
 	}
-	
-	public void init(){
-		
+
+	public void init() {
+
 	}
 
 }

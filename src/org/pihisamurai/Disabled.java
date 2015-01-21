@@ -1,18 +1,18 @@
 package org.pihisamurai;
 
-public class Disabled implements RobotMode{
+public class Disabled implements RobotMode {
 
 	private Robot robot;
-	
-	public Disabled(Robot r){
+
+	public Disabled(Robot r) {
 		this.robot = r;
 	}
-	
-	public void run(){
+
+	public void run() {
 
 	}
-	
-	public void init(){
-		
+
+	public void init() {
+
 	}
 }

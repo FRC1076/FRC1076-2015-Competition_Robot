@@ -16,7 +16,7 @@ public class Robot extends IterativeRobot {
 
 	public Gamepad gamepad;
 
-	public void robotInit(){
+	public void robotInit() {
 		System.out.println("Robot Code Started");
 		drivetrain = new Drivetrain(this);
 		manipulator = new Manipulator(this);
@@ -26,23 +26,23 @@ public class Robot extends IterativeRobot {
 		disabled = new Disabled(this);
 		gamepad = new Gamepad(0); // Changed from 1 to 0
 	}
-	
-	public void disabledInit(){
+
+	public void disabledInit() {
 		System.out.println("Robot Disabled");
 		disabled.init();
 	}
-	
-	public void disabledPeriodic(){
+
+	public void disabledPeriodic() {
 		disabled.run();
 	}
-	
+
 	public void autonomousInit() {
 		System.out.println("Autonomous Mode");
 		autonomous.init();
 	}
-	
-	//Called about every 20ms during Autonomous Mode
-	public void autonomousPeriodic(){
+
+	// Called about every 20ms during Autonomous Mode
+	public void autonomousPeriodic() {
 		autonomous.run();
 	}
 
@@ -50,8 +50,8 @@ public class Robot extends IterativeRobot {
 		System.out.println("Teleoperated Mode");
 		teleop.run();
 	}
-	
-	public void teleopPeriodic(){
+
+	public void teleopPeriodic() {
 		teleop.run();
 	}
 
@@ -59,8 +59,8 @@ public class Robot extends IterativeRobot {
 		System.out.println("Test Mode");
 		test.init();
 	}
-	
-	public void testPeriodic(){
+
+	public void testPeriodic() {
 		test.run();
 	}
 }

@@ -50,9 +50,6 @@ public class Vision {
 
 		pb = new ProcessBuilder("python", program.getAbsolutePath());
 		pb.directory(dir);
-		
-		
-		
 
 	}
 
