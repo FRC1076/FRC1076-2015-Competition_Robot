@@ -1,6 +1,5 @@
 package org.pihisamurai;
 
-import edu.wpi.first.wpilibj.Jaguar;
 
 public class Teleoperated implements RobotMode {
 
@@ -24,10 +23,8 @@ public class Teleoperated implements RobotMode {
 		this.LeftSpeed = robot.gamepad.getLeftY();// left joystick
 		this.RightSpeed = robot.gamepad.getRightY();// right joystick
 
-		double LeftTrigger = robot.gamepad
-				.getRawAxis(robot.gamepad.F310_LEFT_TRIGGER_AXIS);
-		double RightTrigger = robot.gamepad
-				.getRawAxis(robot.gamepad.F310_RIGHT_TRIGGER_AXIS);
+		double LeftTrigger = robot.gamepad.getLeftTrigger();
+		double RightTrigger = robot.gamepad.getRightTrigger();
 		robot.drivetrain.strafePower(LeftTrigger - RightTrigger);
 
 		if (robot.gamepad.getPOV() == 0) {

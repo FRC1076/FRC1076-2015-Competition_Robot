@@ -32,51 +32,62 @@ import edu.wpi.first.wpilibj.DriverStation;
  * It should add the rumble functionality
  */
 
-public class Gamepad extends Joystick {
+public class Gamepad {
 
-	static final int LEFT_BUMPER = 5;
-	static final int RIGHT_BUMPER = 6;
+	private static final byte LEFT_BUMPER = 5;
+	private static final byte RIGHT_BUMPER = 6;
 
-	static final int F310_A = 1;
-	static final int F310_B = 2;
-	static final int F310_X = 3;
-	static final int F310_Y = 4;
-	static final int F310_LB = 5;
-	static final int F310_RB = 6;
-	static final int F310_L_BACK = 7;
-	static final int F310_R_START = 8;
+	private static final byte BUTTON_A = 1;
+	private static final byte BUTTON_B = 2;
+	private static final byte BUTTON_X = 3;
+	private static final byte BUTTON_Y = 4;
+	private static final byte BUTTON_LB = 5;
+	private static final byte BUTTON_RB = 6;
+	private static final byte BUTTON_BACK = 7;
+	private static final byte BUTTON_START = 8;
 
-	static final int F310_LEFT_X = 0;
-	static final int F310_LEFT_Y = 1; // Corrected these.
-	static final int F310_LEFT_TRIGGER_AXIS = 4;
-	static final int F310_RIGHT_TRIGGER_AXIS = 5;
-	static final int F310_RIGHT_Y = 3;
-	static final int F310_RIGHT_X = 2;
-	static final int F310_DPAD_X_AXIS = 6;
+	private static final byte AXIS_LEFT_X = 0;
+	private static final byte AXIS_LEFT_Y = 1; // Corrected these.
+	private static final byte AXIS_LEFT_TRIGGER = 4;
+	private static final byte AXIS_RIGHT_TRIGGER = 5;
+	private static final byte AXIS_RIGHT_Y = 3;
+	private static final byte AXIS_RIGHT_X = 2;
+	private static final byte AIX_POV = 6;
 
 	int port;
 	DriverStation driverStation;
 
 	Gamepad(int port) {
-		super(port);
 		this.port = port;
 		driverStation = DriverStation.getInstance();
 	}
+	
+	double getPOV(){
+		return driverStation.getStickPOVCount(port);
+	}
 
 	double getLeftX() {
-		return getRawAxis(F310_LEFT_X);
+		return getRawAxis(AXIS_LEFT_X);
 	}
 
 	double getLeftY() {
-		return getRawAxis(F310_LEFT_Y);
+		return getRawAxis(AXIS_LEFT_Y);
 	}
 
 	double getRightX() {
-		return getRawAxis(F310_RIGHT_X);
+		return getRawAxis(AXIS_RIGHT_X);
 	}
 
 	double getRightY() {
-		return getRawAxis(F310_RIGHT_Y);
+		return getRawAxis(AXIS_RIGHT_Y);
+	}
+
+	double getRightTrigger() {
+		return getRawAxis(AXIS_RIGHT_TRIGGER);
+	}
+
+	double getLeftTrigger() {
+		return getRawAxis(AXIS_LEFT_TRIGGER);
 	}
 
 	public double getRawAxis(int axis) {
@@ -84,12 +95,40 @@ public class Gamepad extends Joystick {
 	}
 
 	// No idea why this is needed with getRawButton() which is part of joystick
-	boolean getNumberedButton(int button) {
-		return ((0x1 << (button - 1)) & driverStation.getStickButtons(port)) != 0;
+	boolean getNumberedButton(byte button) {
+		return driverStation.getStickButton(port, button);
 	}
 
 	public boolean getButtonA() {
-		return getNumberedButton(1);
+		return getNumberedButton(BUTTON_A);
+	}
+
+	public boolean getButtonB() {
+		return getNumberedButton(BUTTON_B);
+	}
+
+	public boolean getButtonX() {
+		return getNumberedButton(BUTTON_X);
+	}
+
+	public boolean getButtonY() {
+		return getNumberedButton(BUTTON_Y);
+	}
+
+	public boolean getButtonBack() {
+		return getNumberedButton(BUTTON_BACK);
+	}
+
+	public boolean getButtonStart() {
+		return getNumberedButton(BUTTON_START);
+	}
+
+	public boolean getButtonLeftBack() {
+		return getNumberedButton(BUTTON_LB);
+	}
+
+	public boolean getButtonRightBack() {
+		return getNumberedButton(BUTTON_RB);
 	}
 
 }
