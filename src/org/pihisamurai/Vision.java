@@ -48,7 +48,7 @@ public class Vision {
 			e.printStackTrace();
 		}
 
-		pb = new ProcessBuilder("C:\\Python27\\python.exe", program.getAbsolutePath());
+		pb = new ProcessBuilder("python", program.getAbsolutePath());
 		pb.directory(dir);
 		
 		
