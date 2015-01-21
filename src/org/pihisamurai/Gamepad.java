@@ -48,10 +48,10 @@ public class Gamepad extends Joystick {
 
 	static final int F310_LEFT_X = 0;
 	static final int F310_LEFT_Y = 1; // Corrected these.
-	static final int F310_LEFT_TRIGGER_AXIS = 2;
-	static final int F310_RIGHT_TRIGGER_AXIS = 3;
-	static final int F310_RIGHT_Y = 5;
-	static final int F310_RIGHT_X = 4;
+	static final int F310_LEFT_TRIGGER_AXIS = 4;
+	static final int F310_RIGHT_TRIGGER_AXIS = 5;
+	static final int F310_RIGHT_Y = 3;
+	static final int F310_RIGHT_X = 2;
 	static final int F310_DPAD_X_AXIS = 6;
 
 	int port;
