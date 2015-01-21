@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.DriverStation;
  * @author PiHi Samurai 1076
  */
 
-/*
- * Averys Note 1/14/14
+/* Emily is testing commit
+ * Avery's Note 1/14/14
  * 
  * I recommend re-writing it to contain a joystick rather then extend one as to
  * make it easier to use
