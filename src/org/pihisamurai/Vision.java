@@ -12,33 +12,33 @@ import java.util.Scanner;
 
 public class Vision {
 
-	ProcessBuilder pb;
 	static final String fileName = "program.py";
 	static final String dirName = "tempPythonScript";
 
+	ProcessBuilder pb;
 	File dir;
 	File program;
 
 	public Vision() {
 		String home = System.getProperty("user.home");
-		dir = new File(home + "/" + dirName);
+		dir = new File(new File(home), dirName);
 		program = new File(dir, fileName);
 		dir.mkdirs();
-		// program.deleteOnExit();
+		program.deleteOnExit();
 		try {
 			program.createNewFile();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		// dir.deleteOnExit();
+		dir.deleteOnExit();
 
 		try {
 			URL url = this.getClass().getClassLoader().getResource(fileName);
 
 			InputStream in = url.openConnection().getInputStream();
 
-			BufferedWriter out = new BufferedWriter(new FileWriter(home + "/"
-					+ dirName + "/" + fileName));
+			BufferedWriter out = new BufferedWriter(new FileWriter(
+					program.getAbsolutePath()));
 
 			while (in.available() > 0)
 				out.write(in.read());
@@ -48,8 +48,11 @@ public class Vision {
 			e.printStackTrace();
 		}
 
-		pb = new ProcessBuilder("python", program.getAbsolutePath());
-		// pb.directory(dir);
+		pb = new ProcessBuilder("C:\\Python27\\python.exe", program.getAbsolutePath());
+		pb.directory(dir);
+		
+		
+		
 
 	}
 
@@ -57,12 +60,17 @@ public class Vision {
 		try {
 			Process p;
 			p = pb.start();
-
+			try {
+				p.waitFor();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			System.out.println(p.exitValue());
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					p.getInputStream()));
 			StringBuilder builder = new StringBuilder();
 			String line = null;
-		
+
 			while ((line = reader.readLine()) != null) {
 				builder.append(line);
 				builder.append(System.getProperty("line.separator"));
@@ -71,13 +79,13 @@ public class Vision {
 
 			return result;
 		} catch (IOException e) {
+			Vision vision = new Vision();
 			e.printStackTrace();
 		}
 		return "ERROR";
 	}
 
 	public static void main(String args[]) {
-		System.out.println("CV Test");
 		Vision vision = new Vision();
 		System.out.print(vision.getData());
 	}
