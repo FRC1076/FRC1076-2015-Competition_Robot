@@ -30,12 +30,12 @@ public class Drivetrain {
 	}
 
 	public void leftPower(double power) {
-		backLeftMotor.set(power);
-		frontLeftMotor.set(power); // May need to be opposite directions
+		backLeftMotor.set(-power);
+		frontLeftMotor.set(-power); // May need to be opposite directions
 	}
 
 	public void strafePower(double power) {
-		StrafeMotor.set(power);
+		StrafeMotor.set(-power);
 	}
 
 	public void liftPower(double power) {

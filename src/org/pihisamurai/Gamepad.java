@@ -34,8 +34,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class Gamepad {
 
-	private static final byte LEFT_BUMPER = 5;
-	private static final byte RIGHT_BUMPER = 6;
 
 	private static final byte BUTTON_A = 1;
 	private static final byte BUTTON_B = 2;
@@ -45,14 +43,15 @@ public class Gamepad {
 	private static final byte BUTTON_RB = 6;
 	private static final byte BUTTON_BACK = 7;
 	private static final byte BUTTON_START = 8;
+	private static final byte BUTTON_LEFT_STICK_PUSH = 7;
+	private static final byte BUTTON_RIGHT_STICK_PUSH = 8;
 
 	private static final byte AXIS_LEFT_X = 0;
 	private static final byte AXIS_LEFT_Y = 1; // Corrected these.
-	private static final byte AXIS_LEFT_TRIGGER = 4;
-	private static final byte AXIS_RIGHT_TRIGGER = 5;
-	private static final byte AXIS_RIGHT_Y = 3;
-	private static final byte AXIS_RIGHT_X = 2;
-	private static final byte AIX_POV = 6;
+	private static final byte AXIS_LEFT_TRIGGER = 2;
+	private static final byte AXIS_RIGHT_TRIGGER = 3;
+	private static final byte AXIS_RIGHT_Y = 5;
+	private static final byte AXIS_RIGHT_X = 4;
 
 	int port;
 	DriverStation driverStation;
@@ -63,7 +62,7 @@ public class Gamepad {
 	}
 	
 	double getPOV(){
-		return driverStation.getStickPOVCount(port);
+		return driverStation.getStickPOV(port, 0);
 	}
 
 	double getLeftX() {
@@ -129,6 +128,14 @@ public class Gamepad {
 
 	public boolean getButtonRightBack() {
 		return getNumberedButton(BUTTON_RB);
+	}
+
+	public boolean getButtonLeftStick() {
+		return getNumberedButton(BUTTON_LEFT_STICK_PUSH);
+	}
+
+	public boolean getButtonRightStick() {
+		return getNumberedButton(BUTTON_RIGHT_STICK_PUSH);
 	}
 
 }
