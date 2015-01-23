@@ -2,7 +2,7 @@ package org.pihisamurai;
 
 public class Manipulator {
 
-	private Robot robot;
+	private Robot	robot;
 
 	Manipulator(Robot r) {
 		this.robot = r;
