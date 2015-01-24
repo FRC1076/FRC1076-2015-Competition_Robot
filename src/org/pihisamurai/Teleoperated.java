@@ -27,12 +27,12 @@ public class Teleoperated implements RobotMode {
 		double RightTrigger = robot.gamepad.getRightTrigger();
 		robot.drivetrain.strafePower(LeftTrigger - RightTrigger);
 
-	if (robot.gamepad.getPOV() == 0) {
-			robot.drivetrain.liftPower(0.5);
+		if (robot.gamepad.getPOV() == 0) {
+			robot.manipulator.liftPower(0.5);
 		} else if (robot.gamepad.getPOV() == 180) {
-			robot.drivetrain.liftPower(-0.5);
+			robot.manipulator.liftPower(-0.5);
 		} else {
-			robot.drivetrain.liftPower(0);
+			robot.manipulator.liftPower(0);
 		}
 
 		this.robot.drivetrain.leftPower(LeftSpeed);
