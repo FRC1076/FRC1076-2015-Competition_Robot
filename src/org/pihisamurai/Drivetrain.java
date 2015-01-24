@@ -9,7 +9,6 @@ public class Drivetrain {
 	Jaguar backRightMotor;
 	Jaguar frontRightMotor;
 	Jaguar StrafeMotor;
-	Jaguar LiftMotor;
 
 	private Robot robot;
 
