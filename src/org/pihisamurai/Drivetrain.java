@@ -21,7 +21,6 @@ public class Drivetrain {
 		backRightMotor = new Jaguar(2);
 		frontRightMotor = new Jaguar(3);
 		StrafeMotor = new Jaguar(4);
-		LiftMotor = new Jaguar(5);
 	}
 
 	public void rightPower(double power) {
@@ -36,10 +35,6 @@ public class Drivetrain {
 
 	public void strafePower(double power) {
 		StrafeMotor.set(-power);
-	}
-
-	public void liftPower(double power) {
-		LiftMotor.set(power); // For lift motors
 	}
 
 	/*
