@@ -1,5 +1,7 @@
 package org.pihisamurai;
 
+import edu.wpi.first.wpilibj.Jaguar;
+
 public class Manipulator {
 
 	private Robot robot;
