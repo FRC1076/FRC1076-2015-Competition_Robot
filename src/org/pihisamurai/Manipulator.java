@@ -20,11 +20,21 @@ public class Manipulator {
 	}
 	
 	public void liftPower(double power) {
+		if(power == 0)
+		{
+			soleniod.set(DoubleSolenoid.Value.kForward);
+		}
+		else {
+			soleniod.set(DoubleSolenoid.Value.kReverse);
+		}
+		
+		
 		LiftMotor.set(power); // For lift motors
 	}
 	
 	public void rest()
 	{
+		
 		soleniod.set(DoubleSolenoid.Value.kOff); //options are { kOff, kReverse and kForward } after Value.
 	}
 }

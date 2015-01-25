@@ -19,7 +19,7 @@ public class Teleoperated implements RobotMode {
 
 	public void run() {
 		GUI.update(); // getting gamepad input
-
+		
 		this.LeftSpeed = robot.gamepad.getLeftY();// left joystick
 		this.RightSpeed = robot.gamepad.getRightY();// right joystick
 
