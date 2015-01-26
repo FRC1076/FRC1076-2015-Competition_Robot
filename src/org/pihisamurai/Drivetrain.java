@@ -5,35 +5,33 @@ import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivetrain {
 
-	private static final double	P							= 1;
-	private static final double	I							= 0;
-	private static final double	D							= 0;
+	private static final double	P							= 0.01;
+	private static final double	I							= 0.0005;
+	private static final double	D							= 0.0025;
 	private static final double	F							= 0;
 
 	private static final int	LEFT_ENCODER_CHANNEL_A		= 0;
 	private static final int	LEFT_ENCODER_CHANNEL_B		= 1;
 
-	private static final int	RIGHT_ENCODER_CHANNEL_A		= 0;
-	private static final int	RIGHT_ENCODER_CHANNEL_B		= 1;
+	private static final int	RIGHT_ENCODER_CHANNEL_A		= 3;
+	private static final int	RIGHT_ENCODER_CHANNEL_B		= 2;
 
-	private static final int	STRAFE_ENCODER_CHANNEL_A	= 0;
-	private static final int	STRAFE_ENCODER_CHANNEL_B	= 1;
+	//private static final int	STRAFE_ENCODER_CHANNEL_A	= 0;
+	//private static final int	STRAFE_ENCODER_CHANNEL_B	= 1;
 
 	// Circumference of wheel, modified by gear ratio
 	// divided by number of
 	// pulses in one rotation of encoder
-	private static final double	DISTANCE_PER_PULSE_MAIN		= 4 * 16 / 128;
-	private static final double	DISTANCE_PER_PULSE_STRAFE	= 4 * 16 / 128;
+	private static final double	DISTANCE_PER_PULSE_MAIN		= 4 * Math.PI / 360;
+	private static final double	DISTANCE_PER_PULSE_STRAFE	= 4 * Math.PI / 360;
 
 	Encoder						leftRateEncoder;
 	Encoder						rightRateEncoder;
-	Encoder						strafeRateEncoder;
-	Encoder						leftDistEncoder;
-	Encoder						rightDistEncoder;
-	Encoder						strafeDistEncoder;
+	//Encoder						strafeRateEncoder;
 
 	Jaguar						backLeftMotor;
 	Jaguar						frontLeftMotor;
@@ -44,11 +42,11 @@ public class Drivetrain {
 
 	PIDController				leftPIDSpeedControl;
 	PIDController				rightPIDSpeedControl;
-	PIDController				strafePIDSpeedControl;
+	//PIDController				strafePIDSpeedControl;
 
-	PIDController				leftPIDDistControl;
-	PIDController				rightPIDDistControl;
-	PIDController				strafePIDDistControl;
+	//PIDController				leftPIDDistControl;
+	//PIDController				rightPIDDistControl;
+	//PIDController				strafePIDDistControl;
 
 	private Robot				robot;
 
@@ -59,27 +57,22 @@ public class Drivetrain {
 																								// ports,
 																								// oreintation
 		rightRateEncoder = new Encoder(RIGHT_ENCODER_CHANNEL_A, RIGHT_ENCODER_CHANNEL_B, false);
-		strafeRateEncoder = new Encoder(STRAFE_ENCODER_CHANNEL_A, STRAFE_ENCODER_CHANNEL_B, false);
+	//	strafeRateEncoder = new Encoder(STRAFE_ENCODER_CHANNEL_A, STRAFE_ENCODER_CHANNEL_B, false);
 		leftRateEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_MAIN); // TODO
 																		// placeholder
 		rightRateEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_MAIN);
-		strafeRateEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_STRAFE);
-		leftRateEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
-		rightRateEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
-		strafeRateEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
+	//	strafeRateEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_STRAFE);
+		leftRateEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
+		rightRateEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
+	//	strafeRateEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
 
-		leftDistEncoder = new Encoder(0, 1, true); // TODO
-													// ports,
-													// oreintation
-		rightDistEncoder = new Encoder(2, 3, false);
-		strafeDistEncoder = new Encoder(2, 3, false);
-		leftDistEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_MAIN); // TODO
+
 																		// placeholder
-		rightDistEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_MAIN);
-		strafeDistEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_STRAFE);
-		leftDistEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
-		rightDistEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
-		strafeDistEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
+	//	rightDistEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_MAIN);
+	//	strafeDistEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_STRAFE);
+	//	leftDistEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
+	//	rightDistEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
+	//	strafeDistEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
 
 		backLeftMotor = new Jaguar(0);
 		frontLeftMotor = new Jaguar(1);
@@ -90,46 +83,63 @@ public class Drivetrain {
 
 		PIDOutput leftMotors = new PIDOutput() {
 			public void pidWrite(double power) {
-				backLeftMotor.set(-power);
-				frontLeftMotor.set(-power);
-			}
-		};
-
-		PIDOutput rightMotors = new PIDOutput() {
-			public void pidWrite(double power) {
+				leftPIDSpeedControl.setPID(SmartDashboard.getDouble("DB/Slider 1"), SmartDashboard.getDouble("DB/Slider 2"), SmartDashboard.getDouble("DB/Slider 3"));
+				rightPIDSpeedControl.setPID(SmartDashboard.getDouble("DB/Slider 1"), SmartDashboard.getDouble("DB/Slider 2"), SmartDashboard.getDouble("DB/Slider 3"));
+				
 				backLeftMotor.set(power);
 				frontLeftMotor.set(power);
 			}
 		};
 
-		leftPIDSpeedControl = new PIDController(P, I, D, F, leftRateEncoder, leftMotors);
-		rightPIDSpeedControl = new PIDController(P, I, D, F, leftRateEncoder, rightMotors);
-		strafePIDSpeedControl = new PIDController(P, I, D, F, leftRateEncoder, StrafeMotor);
+		PIDOutput rightMotors = new PIDOutput() {
+			public void pidWrite(double power) {
+				System.out.println(power);
+				backRightMotor.set(power);
+				frontRightMotor.set(power);
+			}
+		};
 
-		leftPIDDistControl = new PIDController(P, I, D, F, leftDistEncoder, leftMotors);
-		rightPIDDistControl = new PIDController(P, I, D, F, leftDistEncoder, rightMotors);
-		strafePIDDistControl = new PIDController(P, I, D, F, leftDistEncoder, StrafeMotor);
+		SmartDashboard.putDouble("DB/Slider 1", P);
+		SmartDashboard.putDouble("DB/Slider 2", I);
+		SmartDashboard.putDouble("DB/Slider 3", D);
+		
+		leftPIDSpeedControl = new PIDController(P, I, D, F, leftRateEncoder, leftMotors);
+		rightPIDSpeedControl = new PIDController(P, I, D, F, rightRateEncoder, rightMotors);
+		leftPIDSpeedControl.enable();
+		rightPIDSpeedControl.enable();
+	//	strafePIDSpeedControl = new PIDController(P, I, D, F, leftRateEncoder, StrafeMotor);
+
+	//	leftPIDDistControl = new PIDController(P, I, D, F, leftDistEncoder, leftMotors);
+	//	rightPIDDistControl = new PIDController(P, I, D, F, leftDistEncoder, rightMotors);
+	//	strafePIDDistControl = new PIDController(P, I, D, F, leftDistEncoder, StrafeMotor);
 	}
 
 	public void setRightSpeed(double speed) {
-		rightPIDDistControl.disable();
-		rightPIDSpeedControl.enable();
+	//	System.out.println("Left: " + leftRateEncoder.getRate());
+	//	System.out.println("Right: " + rightRateEncoder.getRate());
+		
+	//	rightPIDDistControl.disable();
+	//	rightPIDSpeedControl.enable();
+
+		SmartDashboard.putDouble("Slider 1", leftRateEncoder.getRate());
+		SmartDashboard.putDouble("Slider 2", leftRateEncoder.getDistance());
 		rightPIDSpeedControl.setSetpoint(speed);
 	}
 
 	public void setLeftSpeed(double speed) {
-		leftPIDDistControl.disable();
-		leftPIDSpeedControl.enable();
+		SmartDashboard.putDouble("Slider 3", speed);
+	//	leftPIDDistControl.disable();
+	//	leftPIDSpeedControl.enable();
 		leftPIDSpeedControl.setSetpoint(speed);
 	}
 
 	public void setStrafeSpeed(double speed) {
-		strafePIDDistControl.disable();
-		strafePIDSpeedControl.enable();
-		strafePIDSpeedControl.setSetpoint(speed);
+	//	strafePIDDistControl.disable();
+	//	strafePIDSpeedControl.enable();
+	//	strafePIDSpeedControl.setSetpoint(speed);
 	}
 
-	public void setRightDist(double dist) {
+	/*public void setRightDist(double dist) {
 		rightPIDSpeedControl.disable();
 		rightPIDDistControl.enable();
 		rightPIDDistControl.setSetpoint(dist);
@@ -145,7 +155,7 @@ public class Drivetrain {
 		strafePIDSpeedControl.disable();
 		strafePIDDistControl.enable();
 		strafePIDDistControl.setSetpoint(dist);
-	}
+	}*/
 
 	/*
 	 * 
