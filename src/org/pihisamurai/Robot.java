@@ -48,7 +48,7 @@ public class Robot extends IterativeRobot {
 
 	public void teleopInit() {
 		System.out.println("Teleoperated Mode");
-		teleop.run();
+		teleop.init();
 	}
 
 	public void teleopPeriodic() {

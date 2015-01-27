@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivetrain {
 
-	private static final double	P							= 0.01;
-	private static final double	I							= 0.0005;
+	private static final double	P							= 0.015;
+	private static final double	I							= 0.000;
 	private static final double	D							= 0.0025;
 	private static final double	F							= 0;
 
@@ -53,7 +53,7 @@ public class Drivetrain {
 	public Drivetrain(Robot r) {
 		this.robot = r;
 
-		leftRateEncoder = new Encoder(LEFT_ENCODER_CHANNEL_A, LEFT_ENCODER_CHANNEL_B, true); // TODO
+		leftRateEncoder = new Encoder(LEFT_ENCODER_CHANNEL_A, LEFT_ENCODER_CHANNEL_B, false); // TODO
 																								// ports,
 																								// oreintation
 		rightRateEncoder = new Encoder(RIGHT_ENCODER_CHANNEL_A, RIGHT_ENCODER_CHANNEL_B, false);
@@ -62,8 +62,8 @@ public class Drivetrain {
 																		// placeholder
 		rightRateEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_MAIN);
 	//	strafeRateEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_STRAFE);
-		leftRateEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
-		rightRateEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
+		leftRateEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
+		rightRateEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
 	//	strafeRateEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
 
 
@@ -83,19 +83,29 @@ public class Drivetrain {
 
 		PIDOutput leftMotors = new PIDOutput() {
 			public void pidWrite(double power) {
-				leftPIDSpeedControl.setPID(SmartDashboard.getDouble("DB/Slider 1"), SmartDashboard.getDouble("DB/Slider 2"), SmartDashboard.getDouble("DB/Slider 3"));
-				rightPIDSpeedControl.setPID(SmartDashboard.getDouble("DB/Slider 1"), SmartDashboard.getDouble("DB/Slider 2"), SmartDashboard.getDouble("DB/Slider 3"));
-				
-				backLeftMotor.set(power);
-				frontLeftMotor.set(power);
+			//	leftPIDSpeedControl.setPID(SmartDashboard.getDouble("DB/Slider 1"), SmartDashboard.getDouble("DB/Slider 2"), SmartDashboard.getDouble("DB/Slider 3"));
+			//	rightPIDSpeedControl.setPID(SmartDashboard.getDouble("DB/Slider 1"), SmartDashboard.getDouble("DB/Slider 2"), SmartDashboard.getDouble("DB/Slider 3"));
+			//	System.out.println(leftPIDSpeedControl.getP());
+				if(power < 0.2 && power > -0.2){
+					backLeftMotor.set(0);
+					frontLeftMotor.set(0);
+				}else{
+					backLeftMotor.set(-power);
+					frontLeftMotor.set(-power);
+				}
 			}
 		};
 
 		PIDOutput rightMotors = new PIDOutput() {
 			public void pidWrite(double power) {
-				System.out.println(power);
-				backRightMotor.set(power);
-				frontRightMotor.set(power);
+				if(power < 0.2 && power > -0.2){
+					backRightMotor.set(0);
+					frontRightMotor.set(0);
+				} else {
+					backRightMotor.set(power);
+					frontRightMotor.set(power);
+				}
+				
 			}
 		};
 
@@ -105,13 +115,20 @@ public class Drivetrain {
 		
 		leftPIDSpeedControl = new PIDController(P, I, D, F, leftRateEncoder, leftMotors);
 		rightPIDSpeedControl = new PIDController(P, I, D, F, rightRateEncoder, rightMotors);
-		leftPIDSpeedControl.enable();
-		rightPIDSpeedControl.enable();
 	//	strafePIDSpeedControl = new PIDController(P, I, D, F, leftRateEncoder, StrafeMotor);
 
 	//	leftPIDDistControl = new PIDController(P, I, D, F, leftDistEncoder, leftMotors);
 	//	rightPIDDistControl = new PIDController(P, I, D, F, leftDistEncoder, rightMotors);
 	//	strafePIDDistControl = new PIDController(P, I, D, F, leftDistEncoder, StrafeMotor);
+	}
+	
+	
+	
+	public void start(){
+		leftPIDSpeedControl.disable();
+		rightPIDSpeedControl.disable();
+		leftPIDSpeedControl.enable();
+		rightPIDSpeedControl.enable();
 	}
 
 	public void setRightSpeed(double speed) {
@@ -121,13 +138,13 @@ public class Drivetrain {
 	//	rightPIDDistControl.disable();
 	//	rightPIDSpeedControl.enable();
 
-		SmartDashboard.putDouble("Slider 1", leftRateEncoder.getRate());
-		SmartDashboard.putDouble("Slider 2", leftRateEncoder.getDistance());
+	//	SmartDashboard.putDouble("Slider 1", leftRateEncoder.getRate());
+	//  SmartDashboard.putDouble("Slider 2", leftRateEncoder.getDistance());
 		rightPIDSpeedControl.setSetpoint(speed);
 	}
 
 	public void setLeftSpeed(double speed) {
-		SmartDashboard.putDouble("Slider 3", speed);
+	//	SmartDashboard.putDouble("Slider 3", speed);
 	//	leftPIDDistControl.disable();
 	//	leftPIDSpeedControl.enable();
 		leftPIDSpeedControl.setSetpoint(speed);

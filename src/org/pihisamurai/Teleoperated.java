@@ -11,7 +11,7 @@ public class Teleoperated implements RobotMode {
 	}
 
 	public void init() {
-
+		robot.drivetrain.start();
 	}
 
 	double	LeftSpeed, RightSpeed;
@@ -23,6 +23,8 @@ public class Teleoperated implements RobotMode {
 													// joystick
 		this.RightSpeed = robot.gamepad.getRightY();// right
 													// joystick
+		if(LeftSpeed < 0.1 && LeftSpeed > -0.1) LeftSpeed = 0;
+		if(RightSpeed < 0.1 && RightSpeed > -0.1) RightSpeed = 0;
 
 		double LeftTrigger = robot.gamepad.getLeftTrigger();
 		double RightTrigger = robot.gamepad.getRightTrigger();
@@ -36,8 +38,8 @@ public class Teleoperated implements RobotMode {
 			robot.drivetrain.liftPower(0);
 		}
 
-		this.robot.drivetrain.setLeftSpeed(LeftSpeed);
-		this.robot.drivetrain.setRightSpeed(RightSpeed);
+		this.robot.drivetrain.setLeftSpeed(LeftSpeed*90);
+		this.robot.drivetrain.setRightSpeed(RightSpeed*90);
 	}
 
 }
