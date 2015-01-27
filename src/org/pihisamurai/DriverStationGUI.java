@@ -2,7 +2,7 @@ package org.pihisamurai;
 
 public class DriverStationGUI {
 
-	Robot	robot;
+	Robot robot;
 
 	DriverStationGUI(Robot r) {
 		robot = r;

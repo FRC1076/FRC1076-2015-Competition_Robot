@@ -1,7 +1,7 @@
 package org.pihisamurai;
 
 public class Test implements RobotMode {
-	private Robot	robot;
+	private Robot robot;
 
 	public Test(Robot r) {
 		this.robot = r;
