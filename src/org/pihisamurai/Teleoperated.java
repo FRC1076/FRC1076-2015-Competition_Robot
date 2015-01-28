@@ -1,6 +1,5 @@
 package org.pihisamurai;
 
-
 public class Teleoperated implements RobotMode {
 
 	private Robot robot;
@@ -15,32 +14,48 @@ public class Teleoperated implements RobotMode {
 		robot.drivetrain.start();
 	}
 
-	double stickX, stickY;
+	private int lastPOV = Gamepad.POV_OFF;
 
 	public void run() {
-		GUI.update(); // getting gamepad input
-		
-		this.stickY = robot.gamepad.getRightY();// left joystick
-		this.stickX = robot.gamepad.getRightX();// right joystick
+		GUI.update();
 
-		
-		
-	/*	double LeftTrigger = robot.gamepad.getLeftTrigger();
-		double RightTrigger = robot.gamepad.getRightTrigger();
-		robot.drivetrain.strafePower(LeftTrigger - RightTrigger);*/
-		
-		robot.drivetrain.strafePower(stickX);
+		int POV = robot.gamepad.getPOV();
 
-		if (robot.gamepad.getPOV() == 0) {
-			robot.manipulator.liftPower(0.5);
-		} else if (robot.gamepad.getPOV() == 180) {
-			robot.manipulator.liftPower(-0.5);
-		} else {
-			robot.manipulator.liftPower(0);
+		if (POV != lastPOV) {
+			lastPOV = POV;
+			switch (POV) {
+			case Gamepad.POV_UP:
+				// Currently Meaningless
+				break;
+			case Gamepad.POV_UP_RIGHT:
+				robot.drivetrain.turn(Math.PI / 4);
+				break;
+			case Gamepad.POV_RIGHT:
+				robot.drivetrain.turn(Math.PI / 2);
+				break;
+			case Gamepad.POV_DOWN_RIGHT:
+				robot.drivetrain.turn(-3 * Math.PI / 2);
+				break;
+			case Gamepad.POV_DOWN:
+				robot.drivetrain.turn(Math.PI);
+				break;
+			case Gamepad.POV_DOWN_LEFT:
+				robot.drivetrain.turn(3 * Math.PI / 4);
+				break;
+			case Gamepad.POV_LEFT:
+				robot.drivetrain.turn(-Math.PI / 2);
+				break;
+			case Gamepad.POV_UP_LEFT:
+				robot.drivetrain.turn(-Math.PI / 4);
+				break;
+			default:
+				System.out.println("UNKNOWN POV ERROR ERROR ERORR");
+				break;
+			}
 		}
-
-		this.robot.drivetrain.setY(stickY);
-		this.robot.drivetrain.modAngle(robot.gamepad.getLeftX());
+		robot.manipulator.liftPower((robot.gamepad.getLeftTrigger() - robot.gamepad.getRightTrigger()) * 2);
+		robot.drivetrain.setStrafe(robot.gamepad.getRightX());
+		robot.drivetrain.setPrimary(robot.gamepad.getRightY());
+		robot.drivetrain.setAngleTarget(robot.gamepad.getLeftX());
 	}
-
 }

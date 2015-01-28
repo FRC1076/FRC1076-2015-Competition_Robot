@@ -40,34 +40,44 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class Gamepad {
 
-	private static final byte	BUTTON_A				= 1;
-	private static final byte	BUTTON_B				= 2;
-	private static final byte	BUTTON_X				= 3;
-	private static final byte	BUTTON_Y				= 4;
-	private static final byte	BUTTON_LB				= 5;
-	private static final byte	BUTTON_RB				= 6;
-	private static final byte	BUTTON_BACK				= 7;
-	private static final byte	BUTTON_START			= 8;
-	private static final byte	BUTTON_LEFT_STICK_PUSH	= 7;
-	private static final byte	BUTTON_RIGHT_STICK_PUSH	= 8;
+	private static final byte BUTTON_A = 1;
+	private static final byte BUTTON_B = 2;
+	private static final byte BUTTON_X = 3;
+	private static final byte BUTTON_Y = 4;
+	private static final byte BUTTON_LB = 5;
+	private static final byte BUTTON_RB = 6;
+	private static final byte BUTTON_BACK = 7;
+	private static final byte BUTTON_START = 8;
+	private static final byte BUTTON_LEFT_STICK_PUSH = 7;
+	private static final byte BUTTON_RIGHT_STICK_PUSH = 8;
 
-	private static final byte	AXIS_LEFT_X				= 0;
-	private static final byte	AXIS_LEFT_Y				= 1;	// Corrected
-																// these.
-	private static final byte	AXIS_LEFT_TRIGGER		= 2;
-	private static final byte	AXIS_RIGHT_TRIGGER		= 3;
-	private static final byte	AXIS_RIGHT_Y			= 5;
-	private static final byte	AXIS_RIGHT_X			= 4;
+	private static final byte AXIS_LEFT_X = 0;
+	private static final byte AXIS_LEFT_Y = 1; // Corrected
+												// these.
+	private static final byte AXIS_LEFT_TRIGGER = 2;
+	private static final byte AXIS_RIGHT_TRIGGER = 3;
+	private static final byte AXIS_RIGHT_Y = 5;
+	private static final byte AXIS_RIGHT_X = 4;
 
-	int							port;
-	DriverStation				driverStation;
+	public static final int POV_UP = 0;
+	public static final int POV_UP_RIGHT = 45;
+	public static final int POV_RIGHT = 90;
+	public static final int POV_DOWN_RIGHT = 135;
+	public static final int POV_DOWN = 180;
+	public static final int POV_DOWN_LEFT = 225;
+	public static final int POV_LEFT = 270;
+	public static final int POV_UP_LEFT = 315;
+	public static final int POV_OFF = -1;
+
+	private int port;
+	private DriverStation driverStation;
 
 	Gamepad(int port) {
 		this.port = port;
 		driverStation = DriverStation.getInstance();
 	}
 
-	double getPOV() {
+	int getPOV() {
 		return driverStation.getStickPOV(port, 0);
 	}
 
@@ -95,13 +105,11 @@ public class Gamepad {
 		return getRawAxis(AXIS_LEFT_TRIGGER);
 	}
 
-	public double getRawAxis(int axis) {
+	private double getRawAxis(int axis) {
 		return driverStation.getStickAxis(port, axis);
 	}
 
-	// No idea why this is needed with getRawButton() which
-	// is part of joystick
-	boolean getNumberedButton(byte button) {
+	private boolean getNumberedButton(byte button) {
 		return driverStation.getStickButton(port, button);
 	}
 
@@ -135,6 +143,14 @@ public class Gamepad {
 
 	public boolean getButtonRightBack() {
 		return getNumberedButton(BUTTON_RB);
+	}
+
+	public boolean getButtonLeftStick() {
+		return getNumberedButton(BUTTON_LEFT_STICK_PUSH);
+	}
+
+	public boolean getButtonRightStick() {
+		return getNumberedButton(BUTTON_RIGHT_STICK_PUSH);
 	}
 
 }
