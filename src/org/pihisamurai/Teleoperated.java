@@ -1,9 +1,10 @@
 package org.pihisamurai;
 
+
 public class Teleoperated implements RobotMode {
 
-	private Robot			robot;
-	public DriverStationGUI	GUI;
+	private Robot robot;
+	public DriverStationGUI GUI;
 
 	public Teleoperated(Robot r) {
 		this.robot = r;
@@ -14,32 +15,32 @@ public class Teleoperated implements RobotMode {
 		robot.drivetrain.start();
 	}
 
-	double	LeftSpeed, RightSpeed;
+	double stickX, stickY;
 
 	public void run() {
 		GUI.update(); // getting gamepad input
+		
+		this.stickY = robot.gamepad.getRightY();// left joystick
+		this.stickX = robot.gamepad.getRightX();// right joystick
 
-		this.LeftSpeed = robot.gamepad.getLeftY();// left
-													// joystick
-		this.RightSpeed = robot.gamepad.getRightY();// right
-													// joystick
-		if(LeftSpeed < 0.1 && LeftSpeed > -0.1) LeftSpeed = 0;
-		if(RightSpeed < 0.1 && RightSpeed > -0.1) RightSpeed = 0;
-
-		double LeftTrigger = robot.gamepad.getLeftTrigger();
+		
+		
+	/*	double LeftTrigger = robot.gamepad.getLeftTrigger();
 		double RightTrigger = robot.gamepad.getRightTrigger();
-		robot.drivetrain.setStrafeSpeed(LeftTrigger - RightTrigger);
+		robot.drivetrain.strafePower(LeftTrigger - RightTrigger);*/
+		
+		robot.drivetrain.strafePower(stickX);
 
 		if (robot.gamepad.getPOV() == 0) {
-			robot.drivetrain.liftPower(0.5);
+			robot.manipulator.liftPower(0.5);
 		} else if (robot.gamepad.getPOV() == 180) {
-			robot.drivetrain.liftPower(-0.5);
+			robot.manipulator.liftPower(-0.5);
 		} else {
-			robot.drivetrain.liftPower(0);
+			robot.manipulator.liftPower(0);
 		}
 
-		this.robot.drivetrain.setLeftSpeed(LeftSpeed*90);
-		this.robot.drivetrain.setRightSpeed(RightSpeed*90);
+		this.robot.drivetrain.setY(stickY);
+		this.robot.drivetrain.modAngle(robot.gamepad.getLeftX());
 	}
 
 }
