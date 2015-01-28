@@ -1,42 +1,6 @@
-/*
- * Gamepad class to encapsulate FRC 1076 PiHiSamuari's Logitech Gamepads
- * Adopted from FRC 830 Rat Packs C++ Version
- * 
- */
-
 package org.pihisamurai;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation;
-
-/**
- *
- * @author PiHi Samurai 1076
- */
-
-/*
- * Emily is testing commit
- * Avery's Note 1/14/14
- * 
- * I recommend re-writing it to contain a joystick rather
- * then extend one as to
- * make it easier to use
- * 
- * http://first.wpi.edu/FRC/roborio/release/docs/java/
- * classedu_1_1wpi_1_1first_1_1wpilibj_1_1Joystick.html
- * 
- * It should contain a function to get every button, get the
- * x/y of the sticks,
- * get values of throttles, and get directional pad
- * direction
- * 
- * Right now it uses constants and a get button function,
- * lets change those
- * constants to be private and have a specific function for
- * each button
- * 
- * It should add the rumble functionality
- */
 
 public class Gamepad {
 
