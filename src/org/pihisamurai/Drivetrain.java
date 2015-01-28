@@ -84,8 +84,8 @@ public class Drivetrain {
 		PIDOutput angleWrite = new PIDOutput(){
 			public void pidWrite(double a) {
 				SmartDashboard.putNumber("Write", a);
-				backLeftMotor.set(a+speed);
-				frontLeftMotor.set(a+speed);
+				backLeftMotor.set(-a+speed);
+				frontLeftMotor.set(-a+speed);
 				backRightMotor.set(a+speed);
 				frontRightMotor.set(a+speed);
 			}
