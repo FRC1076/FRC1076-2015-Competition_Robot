@@ -16,8 +16,7 @@ public class Gamepad {
 	private static final byte BUTTON_RIGHT_STICK_PUSH = 8;
 
 	private static final byte AXIS_LEFT_X = 0;
-	private static final byte AXIS_LEFT_Y = 1; // Corrected
-												// these.
+	private static final byte AXIS_LEFT_Y = 1; 
 	private static final byte AXIS_LEFT_TRIGGER = 2;
 	private static final byte AXIS_RIGHT_TRIGGER = 3;
 	private static final byte AXIS_RIGHT_Y = 5;

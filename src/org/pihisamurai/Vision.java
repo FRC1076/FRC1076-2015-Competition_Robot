@@ -12,12 +12,12 @@ import java.util.Scanner;
 
 public class Vision {
 
-	static final String	fileName	= "program.py";
-	static final String	dirName		= "tempPythonScript";
+	static final String fileName = "program.py";
+	static final String dirName = "tempPythonScript";
 
-	ProcessBuilder		pb;
-	File				dir;
-	File				program;
+	ProcessBuilder pb;
+	File dir;
+	File program;
 
 	public Vision() {
 		String home = System.getProperty("user.home");
