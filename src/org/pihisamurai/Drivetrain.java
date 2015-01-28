@@ -153,6 +153,5 @@ public class Drivetrain {
 		if (stickX < 0.1 && stickX > -0.1)
 			return;
 		HeadingRatePID.setSetpoint(stickX * MAX_TURN_SPEED);
-		HeadingAnglePID.disable();
 	}
 }
