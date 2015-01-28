@@ -79,7 +79,7 @@ public class Drivetrain {
 				SmartDashboard.putNumber("ANGLE RATE", (leftEncoder.getRate() - rightEncoder.getRate()) / (28));
 				SmartDashboard.putNumber("SETPOINT", HeadingRatePID.getSetpoint());
 				return getTurnRate();
-			}
+			} 
 		};
 
 		PIDOutput motorWrite = new PIDOutput() {
@@ -108,8 +108,6 @@ public class Drivetrain {
 		};
 
 		HeadingRatePID = new PIDController(HEADING_P, HEADING_I, HEADING_D, 0, headingSpeed, motorWrite, 20);
-		HeadingRatePID.setInputRange(0, Math.PI * 2);
-		HeadingRatePID.setContinuous(true);
 
 		HeadingAnglePID = new PIDController(ANGLE_P, ANGLE_I, ANGLE_D, 0, headingAbsolute, speedTargetWrite, 20);
 		HeadingAnglePID.setInputRange(0, Math.PI * 2);
@@ -125,7 +123,7 @@ public class Drivetrain {
 	}
 
 	public double getTurnRate() {
-		return ((rightEncoder.getRate() - leftEncoder.getRate()) / (28) + Math.PI) % (2 * Math.PI);
+		return (rightEncoder.getRate() - leftEncoder.getRate()) / (28);
 	}
 
 	public void setStrafe(double power) {
@@ -153,5 +151,6 @@ public class Drivetrain {
 		if (stickX < 0.1 && stickX > -0.1)
 			return;
 		HeadingRatePID.setSetpoint(stickX * MAX_TURN_SPEED);
+		HeadingAnglePID.disable();
 	}
 }
