@@ -19,7 +19,7 @@ public class Teleoperated implements RobotMode {
 
 	public void run() {
 		GUI.update(); // getting gamepad input
-
+		
 		this.LeftSpeed = robot.gamepad.getLeftY();// left joystick
 		this.RightSpeed = robot.gamepad.getRightY();// right joystick
 
@@ -28,11 +28,11 @@ public class Teleoperated implements RobotMode {
 		robot.drivetrain.strafePower(LeftTrigger - RightTrigger);
 
 		if (robot.gamepad.getPOV() == 0) {
-			robot.drivetrain.liftPower(0.5);
+			robot.manipulator.liftPower(0.5);
 		} else if (robot.gamepad.getPOV() == 180) {
-			robot.drivetrain.liftPower(-0.5);
+			robot.manipulator.liftPower(-0.5);
 		} else {
-			robot.drivetrain.liftPower(0);
+			robot.manipulator.liftPower(0);
 		}
 
 		this.robot.drivetrain.leftPower(LeftSpeed);
