@@ -85,13 +85,14 @@ public class Drivetrain {
 		PIDOutput motorWrite = new PIDOutput() {
 			public void pidWrite(double a) {
 				SmartDashboard.putNumber("Write", a);
-				double b = speed;
 				if (speed > 1 - Math.abs(a))
 					speed = 1 - Math.abs(a);
-				backLeftMotor.set(-b + speed);
-				frontLeftMotor.set(-b + speed);
-				backRightMotor.set(b + speed);
-				frontRightMotor.set(b + speed);
+				else if (speed < -1+Math.abs(a))
+					speed = -1+Math.abs(a);
+				backLeftMotor.set(-a + speed);
+				frontLeftMotor.set(-a + speed);
+				backRightMotor.set(a + speed);
+				frontRightMotor.set(a + speed);
 			}
 		};
 
