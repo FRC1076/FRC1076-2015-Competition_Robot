@@ -16,6 +16,7 @@ public class Robot extends IterativeRobot {
 	
 
 	public Gamepad gamepad;
+	public Gamepad gamepad2;
 
 	public void robotInit() {
 		System.out.println("Robot Code Started");
@@ -26,6 +27,8 @@ public class Robot extends IterativeRobot {
 		autonomous = new Autonomous(this);
 		disabled = new Disabled(this);
 		gamepad = new Gamepad(0); // Changed from 1 to 0
+		gamepad2 = new Gamepad(1); // Changed from 1 to 0
+		drivetrain.setDiv(1);
 	}
 
 	public void disabledInit() {
