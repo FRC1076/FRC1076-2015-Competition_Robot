@@ -46,13 +46,15 @@ public class Drivetrain {
 	private PIDController HeadingRatePID;
 	private PIDController HeadingAnglePID;
 
+	private double divisor;
+
 	private Robot robot;
 
 	double speed = 0;
 
 	public Drivetrain(Robot r) {
-		this.robot = r;
-
+		robot = r;
+		
 		gyro = new Gyro(0);
 		
 		leftEncoder = new Encoder(LEFT_ENCODER_CHANNEL_A, LEFT_ENCODER_CHANNEL_B);
@@ -136,6 +138,8 @@ public class Drivetrain {
 		// SmartDashboard.putNumber("P", HEADING_P);
 		// SmartDashboard.putNumber("I", HEADING_I);
 		// SmartDashboard.putNumber("D", HEADING_D);
+
+		divisor = 1;
 	}
 
 	public double getAngle() {
@@ -147,17 +151,25 @@ public class Drivetrain {
 		return gyro.getRate()/180*Math.PI;    //7 mv per degree per second
 		//return (rightEncoder.getRate() - leftEncoder.getRate()) / (28);
 	}
-
+	
 	public void setStrafe(double power) {
 		if (power < 0.1 && power > -0.1)
 			StrafeMotor.set(0);
 		else
-			StrafeMotor.set(power);
+			StrafeMotor.set(power * divisor);
 	}
-
+	
 	public void start() {
 		HeadingRatePID.disable();
 		HeadingRatePID.enable();
+	}
+	
+	public void setDiv(double number) {
+		divisor = number;   //TODO Fix speed mod to work with merge
+	}
+	
+	public double getDiv() {
+		return divisor;
 	}
 
 	public void turn(double a) {

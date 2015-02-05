@@ -107,7 +107,7 @@ public class Gamepad {
 	public boolean getButtonRightBack() {
 		return getNumberedButton(BUTTON_RB);
 	}
-
+	
 	public boolean getButtonLeftStick() {
 		return getNumberedButton(BUTTON_LEFT_STICK_PUSH);
 	}

@@ -1,13 +1,17 @@
 package org.pihisamurai;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Teleoperated implements RobotMode {
 
 	private Robot robot;
 	public DriverStationGUI GUI;
+	boolean liftControl;
 
 	public Teleoperated(Robot r) {
 		this.robot = r;
 		GUI = new DriverStationGUI(r);
+		liftControl = true;
 	}
 
 	public void init() {
@@ -49,7 +53,7 @@ public class Teleoperated implements RobotMode {
 				robot.drivetrain.turn(-Math.PI / 4);
 				break;
 			case Gamepad.POV_OFF:
-				//Do nothing
+				// Do nothing
 				break;
 			default:
 				System.out.println("UNKNOWN POV ANGLE: " + POV);
