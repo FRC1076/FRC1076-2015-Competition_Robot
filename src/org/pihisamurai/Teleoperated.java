@@ -40,7 +40,7 @@ public class Teleoperated implements RobotMode {
 				robot.drivetrain.turn(Math.PI);
 				break;
 			case Gamepad.POV_DOWN_LEFT:
-				robot.drivetrain.turn(3 * Math.PI / 4);
+				robot.drivetrain.turn(-3 * Math.PI / 4);
 				break;
 			case Gamepad.POV_LEFT:
 				robot.drivetrain.turn(-Math.PI / 2);
@@ -48,8 +48,11 @@ public class Teleoperated implements RobotMode {
 			case Gamepad.POV_UP_LEFT:
 				robot.drivetrain.turn(-Math.PI / 4);
 				break;
+			case Gamepad.POV_OFF:
+				//Do nothing
+				break;
 			default:
-				System.out.println("UNKNOWN POV ERROR ERROR ERORR");
+				System.out.println("UNKNOWN POV ANGLE: " + POV);
 				break;
 			}
 		}
