@@ -1,5 +1,6 @@
 package org.pihisamurai;
 
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Jaguar;
@@ -12,7 +13,7 @@ public class Drivetrain {
 
 	private double speedModifier = 1;
 
-	private static final double ANGLE_P = 3;
+	private static final double ANGLE_P = 5;
 	private static final double ANGLE_I = 0.0;
 	private static final double ANGLE_D = 0.1;
 
@@ -29,7 +30,7 @@ public class Drivetrain {
 	// Circumference of wheel, modified by gear ratio divided by number of pulses in one rotation of encoder
 	private static final double DISTANCE_PER_PULSE_MAIN = 4 * Math.PI / 360;
 
-	private static final double MAX_TURN_SPEED = 2; // Radians per second
+	private static final double MAX_TURN_SPEED = 5; // Radians per second
 
 	private Encoder leftEncoder;
 	private Encoder rightEncoder;
@@ -52,10 +53,28 @@ public class Drivetrain {
 
 	double speed = 0;
 
+//Temp
+	private static final double TOTE_RADIUS = 1.2; // meters
+	private BuiltInAccelerometer accelerometer;
+	
 	public Drivetrain(Robot r) {
 		robot = r;
 		
 		gyro = new Gyro(0);
+		
+		accelerometer = new BuiltInAccelerometer() {
+			public double getX() {
+				return super.getX() * 9.80665;
+			}
+
+			public double getY() {
+				return super.getZ() * 9.80665;
+			}
+
+			public double getZ() {
+				return super.getY() * 9.80665;
+			}
+		};
 		
 		leftEncoder = new Encoder(LEFT_ENCODER_CHANNEL_A, LEFT_ENCODER_CHANNEL_B);
 		rightEncoder = new Encoder(RIGHT_ENCODER_CHANNEL_A, RIGHT_ENCODER_CHANNEL_B);
@@ -121,7 +140,21 @@ public class Drivetrain {
 		};
 
 		PIDOutput speedTargetWrite = new PIDOutput() {
+
+			private double lastGyroSpeed = 0;
+			private long lastGyroTime = System.nanoTime();
+			
 			public void pidWrite(double a) {
+
+				double gyroRate = gyro.getRate();
+				long currentTime = System.nanoTime();
+				double gyroAccel = (gyroRate - lastGyroSpeed) / (currentTime - lastGyroTime) * 0.001;
+				lastGyroSpeed = gyroRate;
+				lastGyroTime = currentTime;
+				 SmartDashboard.putNumber("ACCEL", Math.sqrt(Math.pow(TOTE_RADIUS * gyroAccel + accelerometer.getX(), 2)
+							+ Math.pow(accelerometer.getY()
+									+ ((TOTE_RADIUS * gyroRate * TOTE_RADIUS * gyroRate) / TOTE_RADIUS), 2)));
+				
 				HeadingRatePID.setSetpoint(a);
 			}
 		};
@@ -135,6 +168,7 @@ public class Drivetrain {
 
 		targetAngle = getAngle();
 		
+	
 		// SmartDashboard.putNumber("P", HEADING_P);
 		// SmartDashboard.putNumber("I", HEADING_I);
 		// SmartDashboard.putNumber("D", HEADING_D);
@@ -143,12 +177,17 @@ public class Drivetrain {
 	}
 
 	public double getAngle() {
-		return (gyro.getAngle()/180*Math.PI) % (Math.PI * 2);
+		double angle = (Math.toRadians((gyro.getAngle())) % (Math.PI * 2));
+		while(angle < 0)
+		{
+			angle += 2*Math.PI;
+		}
+		return angle;
 		//return ((rightEncoder.getDistance() - leftEncoder.getDistance()) / (28) + Math.PI) % (2 * Math.PI);
 	}
 
 	public double getTurnRate() {
-		return gyro.getRate()/180*Math.PI;    //7 mv per degree per second
+		return Math.toRadians(gyro.getRate());    //7 mv per degree per second
 		//return (rightEncoder.getRate() - leftEncoder.getRate()) / (28);
 	}
 	
@@ -174,7 +213,12 @@ public class Drivetrain {
 
 	public void turn(double a) {
 		HeadingAnglePID.enable();
-		HeadingAnglePID.setSetpoint( (a + getAngle()) % (Math.PI*2));
+		double angle =  (a + getAngle()) % (Math.PI*2);
+		while(angle < 0)
+		{
+			angle += 2*Math.PI;
+		}
+		HeadingAnglePID.setSetpoint(angle);
 	}
 
 	public void setPrimary(double a) {
