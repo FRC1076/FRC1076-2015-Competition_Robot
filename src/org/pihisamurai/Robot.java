@@ -4,11 +4,9 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 
 public class Robot extends IterativeRobot {
 
-	// Common Code
 	public Drivetrain drivetrain;
 	public Manipulator manipulator;
 
-	// Modes
 	public Teleoperated teleop;
 	public Test test;
 	public Autonomous autonomous;
@@ -16,6 +14,7 @@ public class Robot extends IterativeRobot {
 	
 
 	public Gamepad gamepad;
+	public Gamepad gamepad2;
 
 	public void robotInit() {
 		System.out.println("Robot Code Started");
@@ -26,6 +25,8 @@ public class Robot extends IterativeRobot {
 		autonomous = new Autonomous(this);
 		disabled = new Disabled(this);
 		gamepad = new Gamepad(0); // Changed from 1 to 0
+		gamepad2 = new Gamepad(1); // Changed from 1 to 0
+		drivetrain.setDiv(1);
 	}
 
 	public void disabledInit() {
@@ -42,14 +43,13 @@ public class Robot extends IterativeRobot {
 		autonomous.init();
 	}
 
-	// Called about every 20ms during Autonomous Mode
 	public void autonomousPeriodic() {
 		autonomous.run();
 	}
 
 	public void teleopInit() {
 		System.out.println("Teleoperated Mode");
-		teleop.run();
+		teleop.init();
 	}
 
 	public void teleopPeriodic() {

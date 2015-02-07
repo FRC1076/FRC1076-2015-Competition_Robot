@@ -2,7 +2,6 @@ package org.pihisamurai;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Jaguar;
-import edu.wpi.first.wpilibj.Solenoid;
 
 public class Manipulator {
 
@@ -12,29 +11,18 @@ public class Manipulator {
 
 	Manipulator(Robot r) {
 		this.robot = r;
-		
 		LiftMotor = new Jaguar(5);
-		
-		soleniod = new DoubleSolenoid(0, 1);//need to check
-		
+		soleniod = new DoubleSolenoid(0, 1);
 	}
-	
+
 	public void liftPower(double power) {
-		if(power == 0)
-		{
+		if (power < 0.1 && power > -0.1) {
 			soleniod.set(DoubleSolenoid.Value.kForward);
-		}
-		else {
+			LiftMotor.set(0);
+		} else {
 			soleniod.set(DoubleSolenoid.Value.kReverse);
+			LiftMotor.set(power);
 		}
-		
-		
-		LiftMotor.set(power); // For lift motors
 	}
-	
-	public void rest()
-	{
-		
-		soleniod.set(DoubleSolenoid.Value.kOff); //options are { kOff, kReverse and kForward } after Value.
-	}
+
 }

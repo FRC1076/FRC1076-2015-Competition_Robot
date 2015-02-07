@@ -37,8 +37,7 @@ public class Vision {
 
 			InputStream in = url.openConnection().getInputStream();
 
-			BufferedWriter out = new BufferedWriter(new FileWriter(
-					program.getAbsolutePath()));
+			BufferedWriter out = new BufferedWriter(new FileWriter(program.getAbsolutePath()));
 
 			while (in.available() > 0)
 				out.write(in.read());
@@ -63,8 +62,7 @@ public class Vision {
 				e1.printStackTrace();
 			}
 			System.out.println(p.exitValue());
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					p.getInputStream()));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			StringBuilder builder = new StringBuilder();
 			String line = null;
 
