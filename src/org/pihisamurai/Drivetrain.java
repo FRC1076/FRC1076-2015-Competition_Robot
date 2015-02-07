@@ -13,9 +13,9 @@ public class Drivetrain {
 
 	private double speedModifier = 1;
 
-	private static final double ANGLE_P = 5;
-	private static final double ANGLE_I = 0.0;
-	private static final double ANGLE_D = 0.1;
+	private static final double ANGLE_P = 8;
+	private static final double ANGLE_I = 0;
+	private static final double ANGLE_D = 0;
 
 	private static final double RATE_P = 0.25;
 	private static final double RATE_I = 0.00;
@@ -58,13 +58,18 @@ public class Drivetrain {
 		
 		gyro = new Gyro(0) {
 			public double getAngle() {
-				return Math.toRadians(super.getAngle());
+				double a = Math.toRadians(super.getAngle());
+				while (a > Math.PI*2) a -= Math.PI*2;
+				while (a < 0) a += Math.PI*2;
+				return a;
 			}
 
 			public double getRate() {
 				return Math.toRadians(super.getRate());
 			}
 		};
+		
+		//gyro.setSensitivity(0.7);
 		
 		accelerometer = new BuiltInAccelerometer() {
 			public double getX() {
