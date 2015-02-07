@@ -26,7 +26,6 @@ public class Robot extends IterativeRobot {
 		disabled = new Disabled(this);
 		gamepad = new Gamepad(0); // Changed from 1 to 0
 		gamepad2 = new Gamepad(1); // Changed from 1 to 0
-		drivetrain.setDiv(1);
 	}
 
 	public void disabledInit() {

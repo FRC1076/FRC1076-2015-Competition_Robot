@@ -36,7 +36,6 @@ public class Drivetrain {
 	private Encoder rightEncoder;
 	
 	private Gyro gyro;
-	public double targetAngle;
 
 	private Jaguar backLeftMotor;
 	private Jaguar frontLeftMotor;
@@ -47,20 +46,25 @@ public class Drivetrain {
 	private PIDController HeadingRatePID;
 	private PIDController HeadingAnglePID;
 
-	private double divisor;
-
 	private Robot robot;
 
 	double speed = 0;
 
-//Temp
 	private static final double TOTE_RADIUS = 1.2; // meters
 	private BuiltInAccelerometer accelerometer;
 	
 	public Drivetrain(Robot r) {
 		robot = r;
 		
-		gyro = new Gyro(0);
+		gyro = new Gyro(0) {
+			public double getAngle() {
+				return Math.toRadians(super.getAngle());
+			}
+
+			public double getRate() {
+				return Math.toRadians(super.getRate());
+			}
+		};
 		
 		accelerometer = new BuiltInAccelerometer() {
 			public double getX() {
@@ -117,8 +121,8 @@ public class Drivetrain {
 			public void pidWrite(double a) {
 				if (speed > 1 - Math.abs(a))
 					speed = 1 - Math.abs(a);
-				else if (speed < -1 + Math.abs(a))
-					speed = -1 + Math.abs(a);
+				else if (speed < Math.abs(a) - 1)
+					speed = Math.abs(a) - 1;
 				else if (Math.abs(speed + Math.abs(a)) < 0.1 && Math.abs(speed - Math.abs(a)) < 0.1) {
 					backLeftMotor.set(0);
 					frontLeftMotor.set(0);
@@ -135,7 +139,10 @@ public class Drivetrain {
 
 		PIDSource headingAbsolute = new PIDSource() {
 			public double pidGet() { // Angle Robot at
-				return getAngle();
+				double angle = getAngle();
+				while (angle > Math.PI*2) angle -= Math.PI*2;
+				while (angle < 0) angle += Math.PI*2;
+				return angle;
 			}
 		};
 
@@ -146,6 +153,7 @@ public class Drivetrain {
 			
 			public void pidWrite(double a) {
 
+				//Print tote accel
 				double gyroRate = Math.toRadians(gyro.getRate());
 				long currentTime = System.nanoTime();
 				double gyroAccel = (gyroRate - lastGyroSpeed) / (currentTime - lastGyroTime) * 0.001;
@@ -165,24 +173,10 @@ public class Drivetrain {
 		HeadingAnglePID.setInputRange(0, Math.PI * 2);
 		HeadingAnglePID.setContinuous(true);
 		HeadingAnglePID.setOutputRange(-MAX_TURN_SPEED, MAX_TURN_SPEED);
-
-		targetAngle = getAngle();
-		
-	
-		// SmartDashboard.putNumber("P", HEADING_P);
-		// SmartDashboard.putNumber("I", HEADING_I);
-		// SmartDashboard.putNumber("D", HEADING_D);
-
-		divisor = 1;
 	}
 
 	public double getAngle() {
-		double angle = (Math.toRadians((gyro.getAngle())) % (Math.PI * 2));
-		while(angle < 0)
-		{
-			angle += 2*Math.PI;
-		}
-		return angle;
+		return gyro.getAngle();
 		//return ((rightEncoder.getDistance() - leftEncoder.getDistance()) / (28) + Math.PI) % (2 * Math.PI);
 	}
 
@@ -195,36 +189,20 @@ public class Drivetrain {
 		if (power < 0.1 && power > -0.1)
 			StrafeMotor.set(0);
 		else
-			StrafeMotor.set(power * divisor);
+			StrafeMotor.set(power);
 	}
 	
 	public void start() {
 		HeadingRatePID.disable();
 		HeadingRatePID.enable();
 	}
-	
-	public void setDiv(double number) {
-		divisor = number;   //TODO Fix speed mod to work with merge
-	}
-	
-	public double getDiv() {
-		return divisor;
-	}
 
 	public void turn(double a) {
 		HeadingAnglePID.enable();
-		double angle =  (a + getAngle()) % (Math.PI*2);
-		while(angle < 0)
-		{
-			angle += 2*Math.PI;
-		}
-		HeadingAnglePID.setSetpoint(angle);
+		HeadingAnglePID.setSetpoint(a + getAngle());
 	}
 
 	public void setPrimary(double a) {
-		SmartDashboard.putNumber("Target Angle", HeadingAnglePID.getSetpoint());
-		SmartDashboard.putNumber("Current Angle", getAngle());
-		SmartDashboard.putNumber("Turn Rate", getTurnRate());
 		speed = a;
 	}
 
