@@ -146,7 +146,7 @@ public class Drivetrain {
 			
 			public void pidWrite(double a) {
 
-				double gyroRate = gyro.getRate();
+				double gyroRate = Math.toRadians(gyro.getRate());
 				long currentTime = System.nanoTime();
 				double gyroAccel = (gyroRate - lastGyroSpeed) / (currentTime - lastGyroTime) * 0.001;
 				lastGyroSpeed = gyroRate;
