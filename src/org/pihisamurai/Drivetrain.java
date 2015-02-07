@@ -113,7 +113,7 @@ public class Drivetrain {
 
 		PIDSource headingSpeed = new PIDSource() {
 			public double pidGet() {
-				return getTurnRate();
+				return gyro.getRate();
 			}
 		};
 
@@ -139,10 +139,7 @@ public class Drivetrain {
 
 		PIDSource headingAbsolute = new PIDSource() {
 			public double pidGet() { // Angle Robot at
-				double angle = getAngle();
-				while (angle > Math.PI*2) angle -= Math.PI*2;
-				while (angle < 0) angle += Math.PI*2;
-				return angle;
+				return gyro.getAngle();
 			}
 		};
 
@@ -154,7 +151,7 @@ public class Drivetrain {
 			public void pidWrite(double a) {
 
 				//Print tote accel
-				double gyroRate = Math.toRadians(gyro.getRate());
+				double gyroRate = gyro.getRate();
 				long currentTime = System.nanoTime();
 				double gyroAccel = (gyroRate - lastGyroSpeed) / (currentTime - lastGyroTime) * 0.001;
 				lastGyroSpeed = gyroRate;
@@ -169,21 +166,19 @@ public class Drivetrain {
 
 		HeadingRatePID = new PIDController(RATE_P, RATE_I, RATE_D, 0, headingSpeed, motorWrite, 0.02);
 
-		HeadingAnglePID = new PIDController(ANGLE_P, ANGLE_I, ANGLE_D, 0, headingAbsolute, speedTargetWrite, 0.02);
+		HeadingAnglePID = new PIDController(ANGLE_P, ANGLE_I, ANGLE_D, 0, headingAbsolute, speedTargetWrite, 0.02){
+			public void setSetpoint(double a){
+				while (a > Math.PI*2) a -= Math.PI*2;
+				while (a < 0) a += Math.PI*2;
+				super.setSetpoint(a);
+			}
+		};
 		HeadingAnglePID.setInputRange(0, Math.PI * 2);
 		HeadingAnglePID.setContinuous(true);
 		HeadingAnglePID.setOutputRange(-MAX_TURN_SPEED, MAX_TURN_SPEED);
 	}
 
-	public double getAngle() {
-		return gyro.getAngle();
-		//return ((rightEncoder.getDistance() - leftEncoder.getDistance()) / (28) + Math.PI) % (2 * Math.PI);
-	}
-
-	public double getTurnRate() {
-		return Math.toRadians(gyro.getRate());    //7 mv per degree per second
-		//return (rightEncoder.getRate() - leftEncoder.getRate()) / (28);
-	}
+	
 	
 	public void setStrafe(double power) {
 		if (power < 0.1 && power > -0.1)
@@ -199,7 +194,7 @@ public class Drivetrain {
 
 	public void turn(double a) {
 		HeadingAnglePID.enable();
-		HeadingAnglePID.setSetpoint(a + getAngle());
+		HeadingAnglePID.setSetpoint(a + gyro.getAngle());
 	}
 
 	public void setPrimary(double a) {
@@ -209,7 +204,7 @@ public class Drivetrain {
 	public void setAngleTarget(double stickX) {
 		if (Math.abs(stickX) < 0.1) {
 			if (!HeadingAnglePID.isEnable()){
-				HeadingAnglePID.setSetpoint(getAngle());
+				HeadingAnglePID.setSetpoint(gyro.getAngle());
 				HeadingAnglePID.enable();
 			}
 		} else {
