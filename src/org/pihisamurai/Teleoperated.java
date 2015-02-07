@@ -32,25 +32,25 @@ public class Teleoperated implements RobotMode {
 				// Currently Meaningless
 				break;
 			case Gamepad.POV_UP_RIGHT:
-				robot.drivetrain.turn( 1* Math.PI / 8);
+				robot.drivetrain.turn( 1* Math.PI / 4);
 				break;
 			case Gamepad.POV_RIGHT:
-				robot.drivetrain.turn( 2 * Math.PI / 8);
+				robot.drivetrain.turn( 2 * Math.PI / 4);
 				break;
 			case Gamepad.POV_DOWN_RIGHT:
-				robot.drivetrain.turn( 3 * Math.PI / 8);
+				robot.drivetrain.turn( 3 * Math.PI / 4);
 				break;
 			case Gamepad.POV_DOWN:
-				robot.drivetrain.turn( 4 * Math.PI / 8);
+				robot.drivetrain.turn( 4 * Math.PI / 4);
 				break;
 			case Gamepad.POV_DOWN_LEFT:
-				robot.drivetrain.turn( -3 * Math.PI / 8);
+				robot.drivetrain.turn( -3 * Math.PI / 4);
 				break;
 			case Gamepad.POV_LEFT:
-				robot.drivetrain.turn(-2 * Math.PI / 8);
+				robot.drivetrain.turn(-2 * Math.PI / 4);
 				break;
 			case Gamepad.POV_UP_LEFT:
-				robot.drivetrain.turn(-1 * Math.PI / 8);
+				robot.drivetrain.turn(-1 * Math.PI / 4);
 				break;
 			case Gamepad.POV_OFF:
 				// Do nothing
