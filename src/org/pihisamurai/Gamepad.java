@@ -12,8 +12,8 @@ public class Gamepad {
 	private static final byte BUTTON_RB = 6;
 	private static final byte BUTTON_BACK = 7;
 	private static final byte BUTTON_START = 8;
-	private static final byte BUTTON_LEFT_STICK_PUSH = 7;
-	private static final byte BUTTON_RIGHT_STICK_PUSH = 8;
+	private static final byte BUTTON_LEFT_STICK_PUSH = 9;
+	private static final byte BUTTON_RIGHT_STICK_PUSH = 10;
 
 	private static final byte AXIS_LEFT_X = 0;
 	private static final byte AXIS_LEFT_Y = 1; 

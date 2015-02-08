@@ -7,11 +7,16 @@ public class Teleoperated implements RobotMode {
 	private Robot robot;
 	public DriverStationGUI GUI;
 	boolean liftControl;
+	double div;
+	boolean buttonA;
+	boolean isSlow;
 
 	public Teleoperated(Robot r) {
 		this.robot = r;
 		GUI = new DriverStationGUI(r);
 		liftControl = true;
+		div = 0;
+		buttonA = false;
 	}
 
 	public void init() {
@@ -24,6 +29,13 @@ public class Teleoperated implements RobotMode {
 		GUI.update();
 
 		int POV = robot.gamepad.getPOV();
+
+		div = 0.75;
+		if (robot.gamepad.getButtonRightBack()) {
+			div = 1;
+		} else if(robot.gamepad.getButtonLeftBack()) {
+			div = 0.5;
+		}
 
 		if (POV != lastPOV) {
 			lastPOV = POV;
@@ -61,8 +73,8 @@ public class Teleoperated implements RobotMode {
 			}
 		}
 		robot.manipulator.liftPower((robot.gamepad.getLeftTrigger() - robot.gamepad.getRightTrigger()) * 2);
-		robot.drivetrain.setStrafe(robot.gamepad.getRightX());
-		robot.drivetrain.setPrimary(robot.gamepad.getRightY());
+		robot.drivetrain.setStrafe(robot.gamepad.getRightX() * div);
+		robot.drivetrain.setPrimary(robot.gamepad.getRightY() * div);
 		robot.drivetrain.setAngleTarget(robot.gamepad.getLeftX());
 	}
 }

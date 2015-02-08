@@ -123,22 +123,30 @@ public class Drivetrain {
 		};
 
 		PIDOutput motorWrite = new PIDOutput() {
+			// `a` represents the amount to increase or decrease the motor speed
+			// by to compensate for the rotation
+			// TODO: Rename the variable
 			public void pidWrite(double a) {
+				// Set the average of the speed on both sides to compensate for error
+				// in one direction
 				if (speed > 1 - Math.abs(a))
 					speed = 1 - Math.abs(a);
+				// to compensate in the other direction
 				else if (speed < Math.abs(a) - 1)
 					speed = Math.abs(a) - 1;
-				else if (Math.abs(speed + Math.abs(a)) < 0.1 && Math.abs(speed - Math.abs(a)) < 0.1) {
-					backLeftMotor.set(0);
-					frontLeftMotor.set(0);
-					backRightMotor.set(0);
-					frontRightMotor.set(0);
-				} else {
-					backLeftMotor.set(-a + speed);
-					frontLeftMotor.set(-a + speed);
-					backRightMotor.set(a + speed);
-					frontRightMotor.set(a + speed);
+				// Set a deadzone for the speed
+				else if (Math.abs(speed + Math.abs(a)) < 0.1 &&
+						 Math.abs(speed - Math.abs(a)) < 0.1) {
+					// Set the sjpeed to zero while in the deadzone
+					speed = 0;
+					// There's no error because we just want to stop
+					a = 0;
 				}
+				// Set the motors corrected for the error
+				backLeftMotor.set(speed - a);
+				frontLeftMotor.set(speed - a);
+				backRightMotor.set(speed + a);
+				frontRightMotor.set(speed + a);
 			}
 		};
 
