@@ -137,7 +137,7 @@ public class Drivetrain {
 				// Set a deadzone for the speed
 				else if (Math.abs(speed + Math.abs(a)) < 0.1 &&
 						 Math.abs(speed - Math.abs(a)) < 0.1) {
-					// Set the sjpeed to zero while in the deadzone
+					// Set the speed to zero while in the deadzone
 					speed = 0;
 					// There's no error because we just want to stop
 					a = 0;
@@ -172,7 +172,9 @@ public class Drivetrain {
 				 SmartDashboard.putNumber("ACCEL", Math.sqrt(Math.pow(TOTE_RADIUS * gyroAccel + accelerometer.getX(), 2)
 							+ Math.pow(accelerometer.getY()
 									+ ((TOTE_RADIUS * gyroRate * TOTE_RADIUS * gyroRate) / TOTE_RADIUS), 2)));
-				
+				SmartDashboard.putNumber("Angle Rate", gyro.getRate());
+				 
+				 
 				HeadingRatePID.setSetpoint(a);
 			}
 		};

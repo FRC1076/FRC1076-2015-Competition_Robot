@@ -7,16 +7,21 @@ public class Teleoperated implements RobotMode {
 	private Robot robot;
 	public DriverStationGUI GUI;
 	boolean liftControl;
-	double div;
+	double buttonPOV;
 	boolean buttonA;
-	boolean isSlow;
+	double div;
+	double primary;
+	double strafe;
+	public int box;
+	
 
 	public Teleoperated(Robot r) {
 		this.robot = r;
 		GUI = new DriverStationGUI(r);
 		liftControl = true;
-		div = 0;
+		div = 1;
 		buttonA = false;
+		buttonPOV = 0;
 	}
 
 	public void init() {
@@ -27,6 +32,16 @@ public class Teleoperated implements RobotMode {
 
 	public void run() {
 		GUI.update();
+
+		if(robot.gamepad2.getButtonA() != buttonA && !buttonA) {
+			box = 0;
+		} if(robot.gamepad2.getPOV() != buttonPOV && robot.gamepad2.getPOV() == 0) {
+			box++;
+		} else if(robot.gamepad2.getPOV() != buttonPOV && robot.gamepad2.getPOV() == 180) {
+			box--;
+		}
+		buttonPOV = robot.gamepad2.getPOV();
+		buttonA = robot.gamepad2.getButtonA();
 
 		int POV = robot.gamepad.getPOV();
 
@@ -72,9 +87,16 @@ public class Teleoperated implements RobotMode {
 				break;
 			}
 		}
-		robot.manipulator.liftPower((robot.gamepad.getLeftTrigger() - robot.gamepad.getRightTrigger()) * 2);
-		robot.drivetrain.setStrafe(robot.gamepad.getRightX() * div);
-		robot.drivetrain.setPrimary(robot.gamepad.getRightY() * div);
+		if(Math.abs(robot.gamepad.getLeftTrigger() - robot.gamepad.getRightTrigger()) > Math.abs(robot.gamepad2.getLeftTrigger() - robot.gamepad2.getRightTrigger())) {
+			robot.manipulator.liftPower((robot.gamepad.getLeftTrigger() - robot.gamepad.getRightTrigger()) * 2);
+		} else {
+			robot.manipulator.liftPower((robot.gamepad2.getLeftTrigger() - robot.gamepad2.getRightTrigger()) * 2);
+		}
+		strafe = (robot.gamepad.getRightX() * div);
+		primary = (robot.gamepad.getRightY() * div * 1.25);
 		robot.drivetrain.setAngleTarget(robot.gamepad.getLeftX());
+		
+		robot.drivetrain.setStrafe(strafe);
+		robot.drivetrain.setPrimary(primary);
 	}
 }
