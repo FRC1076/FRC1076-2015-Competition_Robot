@@ -166,7 +166,7 @@ public class Drivetrain {
 				//Print tote accel
 				double gyroRate = gyro.getRate();
 				long currentTime = System.nanoTime();
-				double gyroAccel = (gyroRate - lastGyroSpeed) / (currentTime - lastGyroTime) * 0.001;
+				double gyroAccel = (gyroRate - lastGyroSpeed) / (currentTime - lastGyroTime)  / 1000000000;
 				lastGyroSpeed = gyroRate;
 				lastGyroTime = currentTime;
 				 SmartDashboard.putNumber("ACCEL", Math.sqrt(Math.pow(TOTE_RADIUS * gyroAccel + accelerometer.getX(), 2)
