@@ -30,7 +30,7 @@ public class Drivetrain {
 	// Circumference of wheel, modified by gear ratio divided by number of pulses in one rotation of encoder
 	private static final double DISTANCE_PER_PULSE_MAIN = 4 * Math.PI / 360;
 
-	private static final double MAX_TURN_SPEED = 5; // Radians per second
+	private double maxTurnSpeed = 5; // Radians per second
 
 	private Encoder leftEncoder;
 	private Encoder rightEncoder;
@@ -190,7 +190,7 @@ public class Drivetrain {
 		};
 		HeadingAnglePID.setInputRange(0, Math.PI * 2);
 		HeadingAnglePID.setContinuous(true);
-		HeadingAnglePID.setOutputRange(-MAX_TURN_SPEED, MAX_TURN_SPEED);
+		HeadingAnglePID.setOutputRange(-maxTurnSpeed, maxTurnSpeed);
 	}
 
 	
@@ -224,7 +224,12 @@ public class Drivetrain {
 			}
 		} else {
 			HeadingAnglePID.disable();
-			HeadingRatePID.setSetpoint(stickX * MAX_TURN_SPEED);
+			HeadingRatePID.setSetpoint(stickX * maxTurnSpeed);
 		}
+	}
+	
+	public void setMaxTurnSpeed(double speed) {
+		maxTurnSpeed = speed;
+		HeadingAnglePID.setOutputRange(-maxTurnSpeed, maxTurnSpeed);
 	}
 }

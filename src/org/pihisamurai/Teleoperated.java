@@ -10,8 +10,12 @@ public class Teleoperated implements RobotMode {
 	double buttonPOV;
 	boolean buttonA;
 	double div;
+	double newPrimary;
 	double primary;
+	double newStrafe;
 	double strafe;
+	double absTime;
+	double period;
 	public int box;
 	
 
@@ -22,23 +26,35 @@ public class Teleoperated implements RobotMode {
 		div = 1;
 		buttonA = false;
 		buttonPOV = 0;
+		absTime = System.nanoTime();
 	}
 
 	public void init() {
 		robot.drivetrain.start();
+		SmartDashboard.putNumber("Divisor", 1);
 	}
 
 	private int lastPOV = Gamepad.POV_OFF;
 
 	public void run() {
 		GUI.update();
+		
+		period = (System.nanoTime() - absTime) / 1000000000;
+		absTime = System.nanoTime();
+		SmartDashboard.putNumber("Nano", period);
 
 		if(robot.gamepad2.getButtonA() != buttonA && !buttonA) {
 			box = 0;
 		} if(robot.gamepad2.getPOV() != buttonPOV && robot.gamepad2.getPOV() == 0) {
 			box++;
+			if(box > 6) {
+				box = 6;
+			}
 		} else if(robot.gamepad2.getPOV() != buttonPOV && robot.gamepad2.getPOV() == 180) {
 			box--;
+			if(box < 0) {
+				box = 0;
+			}
 		}
 		buttonPOV = robot.gamepad2.getPOV();
 		buttonA = robot.gamepad2.getButtonA();
@@ -92,9 +108,28 @@ public class Teleoperated implements RobotMode {
 		} else {
 			robot.manipulator.liftPower((robot.gamepad2.getLeftTrigger() - robot.gamepad2.getRightTrigger()) * 2);
 		}
-		strafe = (robot.gamepad.getRightX() * div);
-		primary = (robot.gamepad.getRightY() * div * 1.25);
+		
+		robot.drivetrain.setMaxTurnSpeed(7 - box / SmartDashboard.getNumber("Divisor"));
 		robot.drivetrain.setAngleTarget(robot.gamepad.getLeftX());
+		
+		double limit = 0.5 / (box * 8 + 1) / 0.02 * period;
+		newStrafe = robot.gamepad.getRightX() * div * 1.25;
+		if(strafe - newStrafe > limit * 1.5) {
+			strafe -= limit * 1.5;
+		} else if(strafe - newStrafe < -limit * 1.5) {
+			strafe += limit * 1.5;
+		} else {
+			strafe = newStrafe;
+		}
+		
+		newPrimary = robot.gamepad.getRightY() * div;
+		if(primary - newPrimary > limit) {
+			primary -= limit;
+		} else if(primary - newPrimary < -limit) {
+			primary += limit;
+		} else {
+			primary = newPrimary;
+		}
 		
 		robot.drivetrain.setStrafe(strafe);
 		robot.drivetrain.setPrimary(primary);
