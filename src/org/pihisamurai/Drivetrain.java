@@ -160,7 +160,7 @@ public class Drivetrain {
 
 			private double lastGyroSpeed = 0;
 			private long lastGyroTime = System.nanoTime();
-			
+		
 			public void pidWrite(double a) {				 
 				HeadingRatePID.setSetpoint(a);
 			}

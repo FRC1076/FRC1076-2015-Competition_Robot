@@ -16,8 +16,6 @@ public class Teleoperated implements RobotMode {
 	double absTime;
 	double period;
 	public int box;
-	double mod;
-	double accelLimit;
 
 	public Teleoperated(Robot r) {
 		this.robot = r;
@@ -26,7 +24,6 @@ public class Teleoperated implements RobotMode {
 		buttonA = false;
 		buttonPOV = 0;
 		absTime = System.nanoTime();
-		accelLimit =1;
 	}
 
 	public void init() {
@@ -61,14 +58,15 @@ public class Teleoperated implements RobotMode {
 		
 		if(robot.gamepad2.getButtonA() != buttonA && !buttonA) {
 			box = 0;
-		} if(robot.gamepad2.getPOV() != buttonPOV && robot.gamepad2.getPOV() == 0) {
+		}
+		if (robot.gamepad2.getPOV() != buttonPOV && robot.gamepad2.getPOV() == 0) {
 			box++;
-			if(box > 6) {
+			if (box > 6) {
 				box = 6;
 			}
-		} else if(robot.gamepad2.getPOV() != buttonPOV && robot.gamepad2.getPOV() == 180) {
+		} else if (robot.gamepad2.getPOV() != buttonPOV && robot.gamepad2.getPOV() == 180) {
 			box--;
-			if(box < 0) {
+			if (box < 0) {
 				box = 0;
 			}
 		}
@@ -91,19 +89,19 @@ public class Teleoperated implements RobotMode {
 				// Currently Meaningless
 				break;
 			case Gamepad.POV_UP_RIGHT:
-				robot.drivetrain.turn( 1* Math.PI / 4);
+				robot.drivetrain.turn(1 * Math.PI / 4);
 				break;
 			case Gamepad.POV_RIGHT:
-				robot.drivetrain.turn( 2 * Math.PI / 4);
+				robot.drivetrain.turn(2 * Math.PI / 4);
 				break;
 			case Gamepad.POV_DOWN_RIGHT:
-				robot.drivetrain.turn( 3 * Math.PI / 4);
+				robot.drivetrain.turn(3 * Math.PI / 4);
 				break;
 			case Gamepad.POV_DOWN:
-				robot.drivetrain.turn( 4 * Math.PI / 4);
+				robot.drivetrain.turn(4 * Math.PI / 4);
 				break;
 			case Gamepad.POV_DOWN_LEFT:
-				robot.drivetrain.turn( -3 * Math.PI / 4);
+				robot.drivetrain.turn(-3 * Math.PI / 4);
 				break;
 			case Gamepad.POV_LEFT:
 				robot.drivetrain.turn(-2 * Math.PI / 4);
@@ -119,12 +117,12 @@ public class Teleoperated implements RobotMode {
 				break;
 			}
 		}
-		if(Math.abs(robot.gamepad.getLeftTrigger() - robot.gamepad.getRightTrigger()) > Math.abs(robot.gamepad2.getLeftTrigger() - robot.gamepad2.getRightTrigger())) {
+		if (Math.abs(robot.gamepad.getLeftTrigger() - robot.gamepad.getRightTrigger()) > Math.abs(robot.gamepad2
+				.getLeftTrigger() - robot.gamepad2.getRightTrigger())) {
 			robot.manipulator.liftPower((robot.gamepad.getLeftTrigger() - robot.gamepad.getRightTrigger()) * 2);
 		} else {
 			robot.manipulator.liftPower((robot.gamepad2.getLeftTrigger() - robot.gamepad2.getRightTrigger()) * 2);
 		}
-		
 		switch (box){
 		
 		case 0: turnSpeed = SmartDashboard.getNumber("Turn Speed 0 Boxes");
@@ -142,6 +140,8 @@ public class Teleoperated implements RobotMode {
 		case 6: turnSpeed = SmartDashboard.getNumber("Turn Speed 6 Boxes");
 				break;				
 		}
+		
+		double accelLimit = 0;
 			
 		switch (box){
 		case 0: accelLimit = SmartDashboard.getNumber("Stick change rate 0 boxes");
@@ -157,7 +157,7 @@ public class Teleoperated implements RobotMode {
 		case 5: accelLimit = SmartDashboard.getNumber("Stick change rate 5 boxes");
 				break;
 		case 6: accelLimit = SmartDashboard.getNumber("Stick change rate 6 boxes");
-				break;			
+				break;		
 		}
 		
 		accelLimit *= period;
@@ -185,7 +185,7 @@ public class Teleoperated implements RobotMode {
 		} else {
 			primary = newPrimary;
 		}
-		
+
 		robot.drivetrain.setStrafe(strafe);
 		robot.drivetrain.setPrimary(primary);
 	}
