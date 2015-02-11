@@ -9,7 +9,6 @@ public class Teleoperated implements RobotMode {
 	boolean liftControl;
 	double buttonPOV;
 	boolean buttonA;
-	double div;
 	double newPrimary;
 	double primary;
 	double newStrafe;
@@ -17,32 +16,49 @@ public class Teleoperated implements RobotMode {
 	double absTime;
 	double period;
 	public int box;
-	
+	double mod;
+	double accelLimit;
 
 	public Teleoperated(Robot r) {
 		this.robot = r;
 		GUI = new DriverStationGUI(r);
 		liftControl = true;
-		div = 1;
 		buttonA = false;
 		buttonPOV = 0;
 		absTime = System.nanoTime();
+		accelLimit =1;
 	}
 
 	public void init() {
 		robot.drivetrain.start();
-		SmartDashboard.putNumber("Divisor", 1);
+		SmartDashboard.putNumber("Turn Speed 0 Boxes", 12);
+		SmartDashboard.putNumber("Turn Speed 1 Boxes", 12);
+		SmartDashboard.putNumber("Turn Speed 2 Boxes", 4.5);
+		SmartDashboard.putNumber("Turn Speed 3 Boxes", 3.5);
+		SmartDashboard.putNumber("Turn Speed 4 Boxes", 2.5);
+		SmartDashboard.putNumber("Turn Speed 5 Boxes", 2);
+		SmartDashboard.putNumber("Turn Speed 6 Boxes", 1.5);
+
+		SmartDashboard.putNumber("Stick change rate 0 boxes", 1000);
+		SmartDashboard.putNumber("Stick change rate 1 boxes", 1000);
+		SmartDashboard.putNumber("Stick change rate 2 boxes", 1000);
+		SmartDashboard.putNumber("Stick change rate 3 boxes", 0.7);
+		SmartDashboard.putNumber("Stick change rate 4 boxes", 0.5);
+		SmartDashboard.putNumber("Stick change rate 5 boxes", 0.3);
+		SmartDashboard.putNumber("Stick change rate 6 boxes", 0.2);
 	}
 
 	private int lastPOV = Gamepad.POV_OFF;
 
 	public void run() {
+		double speedModifier = 1;
+		double turnSpeed = 1;
+		
 		GUI.update();
 		
-		period = (System.nanoTime() - absTime) / 1000000000;
+		period = (System.nanoTime() - absTime) / 1000000000.0;
 		absTime = System.nanoTime();
-		SmartDashboard.putNumber("Nano", period);
-
+		
 		if(robot.gamepad2.getButtonA() != buttonA && !buttonA) {
 			box = 0;
 		} if(robot.gamepad2.getPOV() != buttonPOV && robot.gamepad2.getPOV() == 0) {
@@ -61,11 +77,11 @@ public class Teleoperated implements RobotMode {
 
 		int POV = robot.gamepad.getPOV();
 
-		div = 0.75;
+		speedModifier = 0.75;
 		if (robot.gamepad.getButtonRightBack()) {
-			div = 1;
+			speedModifier = 1;
 		} else if(robot.gamepad.getButtonLeftBack()) {
-			div = 0.5;
+			speedModifier = 0.5;
 		}
 
 		if (POV != lastPOV) {
@@ -109,24 +125,63 @@ public class Teleoperated implements RobotMode {
 			robot.manipulator.liftPower((robot.gamepad2.getLeftTrigger() - robot.gamepad2.getRightTrigger()) * 2);
 		}
 		
-		robot.drivetrain.setMaxTurnSpeed(7 - box / SmartDashboard.getNumber("Divisor"));
+		switch (box){
+		
+		case 0: turnSpeed = SmartDashboard.getNumber("Turn Speed 0 Boxes");
+				break;
+		case 1: turnSpeed = SmartDashboard.getNumber("Turn Speed 1 Boxes");
+				break;	
+		case 2: turnSpeed = SmartDashboard.getNumber("Turn Speed 2 Boxes");
+				break;
+		case 3: turnSpeed = SmartDashboard.getNumber("Turn Speed 3 Boxes");
+				break;
+		case 4: turnSpeed = SmartDashboard.getNumber("Turn Speed 4 Boxes");
+				break;
+		case 5: turnSpeed = SmartDashboard.getNumber("Turn Speed 5 Boxes");
+				break;
+		case 6: turnSpeed = SmartDashboard.getNumber("Turn Speed 6 Boxes");
+				break;				
+		}
+			
+		switch (box){
+		case 0: accelLimit = SmartDashboard.getNumber("Stick change rate 0 boxes");
+				break;
+		case 1: accelLimit = SmartDashboard.getNumber("Stick change rate 1 boxes");
+				break;	
+		case 2: accelLimit = SmartDashboard.getNumber("Stick change rate 2 boxes");
+				break;
+		case 3: accelLimit = SmartDashboard.getNumber("Stick change rate 3 boxes");
+				break;
+		case 4: accelLimit = SmartDashboard.getNumber("Stick change rate 4 boxes");
+				break;
+		case 5: accelLimit = SmartDashboard.getNumber("Stick change rate 5 boxes");
+				break;
+		case 6: accelLimit = SmartDashboard.getNumber("Stick change rate 6 boxes");
+				break;			
+		}
+		
+		accelLimit *= period;
+		
+		robot.drivetrain.setMaxTurnSpeed(turnSpeed);
 		robot.drivetrain.setAngleTarget(robot.gamepad.getLeftX());
 		
-		double limit = 0.5 / (box * 8 + 1) / 0.02 * period;
-		newStrafe = robot.gamepad.getRightX() * div * 1.25;
-		if(strafe - newStrafe > limit * 1.5) {
-			strafe -= limit * 1.5;
-		} else if(strafe - newStrafe < -limit * 1.5) {
-			strafe += limit * 1.5;
+	//	double limit = 0.5 / (box * 8 + 1) * period;
+		newStrafe = robot.gamepad.getRightX() * speedModifier * 1.25;
+		if(strafe - newStrafe > accelLimit * 1.5) {
+			strafe -= accelLimit * 1.5;
+		} else if(strafe - newStrafe < -accelLimit * 1.5) {
+			strafe += accelLimit * 1.5;
 		} else {
 			strafe = newStrafe;
 		}
 		
-		newPrimary = robot.gamepad.getRightY() * div;
-		if(primary - newPrimary > limit) {
-			primary -= limit;
-		} else if(primary - newPrimary < -limit) {
-			primary += limit;
+		
+		
+		newPrimary = robot.gamepad.getRightY() * speedModifier;
+		if(primary - newPrimary > accelLimit) {
+			primary -= accelLimit;
+		} else if(primary - newPrimary < -accelLimit) {
+			primary += accelLimit;
 		} else {
 			primary = newPrimary;
 		}

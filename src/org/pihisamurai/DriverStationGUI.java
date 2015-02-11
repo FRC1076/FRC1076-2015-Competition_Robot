@@ -12,8 +12,6 @@ public class DriverStationGUI {
 	}
 
 	public void update() {
-		SmartDashboard.putNumber("Right X", robot.gamepad.getRightX());
-		SmartDashboard.putNumber("Right Y", robot.gamepad.getRightY());
 		SmartDashboard.putNumber("Box Count", robot.teleop.box);
 	}
 

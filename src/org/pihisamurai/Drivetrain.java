@@ -161,20 +161,7 @@ public class Drivetrain {
 			private double lastGyroSpeed = 0;
 			private long lastGyroTime = System.nanoTime();
 			
-			public void pidWrite(double a) {
-
-				//Print tote accel
-				double gyroRate = gyro.getRate();
-				long currentTime = System.nanoTime();
-				double gyroAccel = (gyroRate - lastGyroSpeed) / (currentTime - lastGyroTime) * 0.001;
-				lastGyroSpeed = gyroRate;
-				lastGyroTime = currentTime;
-				 SmartDashboard.putNumber("ACCEL", Math.sqrt(Math.pow(TOTE_RADIUS * gyroAccel + accelerometer.getX(), 2)
-							+ Math.pow(accelerometer.getY()
-									+ ((TOTE_RADIUS * gyroRate * TOTE_RADIUS * gyroRate) / TOTE_RADIUS), 2)));
-				SmartDashboard.putNumber("Angle Rate", gyro.getRate());
-				 
-				 
+			public void pidWrite(double a) {				 
 				HeadingRatePID.setSetpoint(a);
 			}
 		};
