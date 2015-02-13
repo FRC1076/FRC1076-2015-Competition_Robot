@@ -10,8 +10,6 @@ public class Teleoperated implements RobotMode {
 	double buttonPOV;
 	boolean buttonA;
 	public int box;
-	private double primary;
-	private double strafe;
 
 	public Teleoperated(Robot r) {
 		this.robot = r;
@@ -38,6 +36,16 @@ public class Teleoperated implements RobotMode {
 		SmartDashboard.putNumber("Stick change rate 4 boxes", 0.5);
 		SmartDashboard.putNumber("Stick change rate 5 boxes", 0.3);
 		SmartDashboard.putNumber("Stick change rate 6 boxes", 0.2);
+		
+		SmartDashboard.putNumber("Angle stick rate 0 boxes", 10000);
+		SmartDashboard.putNumber("Angle stick rate 1 boxes", 10000);
+		SmartDashboard.putNumber("Angle stick rate 2 boxes", 10000);
+		SmartDashboard.putNumber("Angle stick rate 3 boxes", 10000);
+		SmartDashboard.putNumber("Angle stick rate 4 boxes", 10000);
+		SmartDashboard.putNumber("Angle stick rate 5 boxes", 10000);
+		SmartDashboard.putNumber("Angle stick rate 6 boxes", 10000);
+	
+
 	}
 
 	private int lastPOV = Gamepad.POV_OFF;
@@ -78,9 +86,10 @@ public class Teleoperated implements RobotMode {
 			if(POV == 0);
 			else if(POV <= 180)
 				robot.drivetrain.turn((POV/45) * Math.PI / 4);
-			else if(POV > 180 && POV < 360)
+			else if(POV > 180 && POV < 360){
 				POV-=180;
 				robot.drivetrain.turn((-POV/45) * Math.PI / 4);
+			}
 			/*switch (POV) {
 			case Gamepad.POV_UP://0
 				// Currently Meaningless
@@ -131,7 +140,7 @@ public class Teleoperated implements RobotMode {
 		robot.drivetrain.setMaxTurnSpeed(turnSpeed);
 		robot.drivetrain.setAngleTarget(robot.gamepad.getLeftX());
 
-		robot.drivetrain.setStrafe(strafe*speedModifier*1.25);
-		robot.drivetrain.setPrimary(primary*speedModifier);
+		robot.drivetrain.setStrafe(robot.gamepad.getRightX()*speedModifier*1.25);
+		robot.drivetrain.setPrimary(robot.gamepad.getRightY()*speedModifier);
 	}
 }

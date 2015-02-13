@@ -183,6 +183,7 @@ public class Drivetrain {
 		
 
 		strafeUpdate.start();
+		primaryUpdate.start();
 	}
 
 	double angleLimit = Double.MAX_VALUE;
@@ -271,7 +272,8 @@ public class Drivetrain {
 				} else {
 					speed = primaryTargetPower;
 				}
-
+				System.out.println("Target " + primaryTargetPower);
+				System.out.println("Speed " + speed);
 				try {
 					Thread.sleep(20);
 				} catch (InterruptedException e) {
