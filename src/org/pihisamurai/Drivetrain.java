@@ -12,11 +12,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Drivetrain {
 
 	private static final double ANGLE_P = 8;
-	private static final double ANGLE_I = 0;
-	private static final double ANGLE_D = 0;
+	private static final double ANGLE_I = 0; // Keep at 0
+	private static final double ANGLE_D = 6;
 
 	private static final double RATE_P = 0.25;
-	private static final double RATE_I = 0.00;
+	private static final double RATE_I = 0.0; // Keep at 0
 	private static final double RATE_D = 0.05;
 
 	private static final int LEFT_ENCODER_CHANNEL_A = 0;
@@ -46,6 +46,8 @@ public class Drivetrain {
 
 	private Robot robot;
 
+	double angleSpeedTarget = 0;
+	double angleSpeed = 0;
 	double speed = 0;
 
 	private BuiltInAccelerometer accelerometer;
@@ -67,7 +69,6 @@ public class Drivetrain {
 				return Math.toRadians(super.getRate());
 			}
 		};
-		
 
 		// gyro.setSensitivity(0.7);
 
@@ -92,27 +93,42 @@ public class Drivetrain {
 
 		backLeftMotor = new Jaguar(0) {
 			public void set(double p) {
-				super.set(-p);
+				if (Math.abs(p) < 0.05)
+					super.set(0);
+				else
+					super.set(-p);
 			}
 		};
 		frontLeftMotor = new Jaguar(1) {
 			public void set(double p) {
-				super.set(-p);
+				if (Math.abs(p) < 0.05)
+					super.set(0);
+				else
+					super.set(-p);
 			}
 		};
 		backRightMotor = new Jaguar(2) {
 			public void set(double p) {
-				super.set(p * 0.85);
+				if (Math.abs(p) < 0.05)
+					super.set(0);
+				else
+					super.set(p * 0.85);
 			}
 		};
 		frontRightMotor = new Jaguar(3) {
 			public void set(double p) {
-				super.set(p * 0.85);
+				if (Math.abs(p) < 0.05)
+					super.set(0);
+				else
+					super.set(p * 0.85);
 			}
 		};
 		strafeMotor = new Jaguar(4) {
 			public void set(double p) {
-				super.set(p);
+				if (Math.abs(p) < 0.05)
+					super.set(0);
+				else
+					super.set(p);
 			}
 		};
 
@@ -123,30 +139,8 @@ public class Drivetrain {
 		};
 
 		PIDOutput motorWrite = new PIDOutput() {
-			// `a` represents the amount to increase or decrease the motor speed
-			// by to compensate for the rotation
-			// TODO: Rename the variable
 			public void pidWrite(double a) {
-				// Set the average of the speed on both sides to compensate for error
-				// in one direction
-				double localSpeed = speed;
-				if (localSpeed > 1 - Math.abs(a))
-					localSpeed = 1 - Math.abs(a);
-				// to compensate in the other direction
-				else if (localSpeed < Math.abs(a) - 1)
-					localSpeed = Math.abs(a) - 1;
-				// Set a deadzone for the speed
-				else if (Math.abs(localSpeed + Math.abs(a)) < 0.1 && Math.abs(localSpeed - Math.abs(a)) < 0.1) {
-					// Set the speed to zero while in the deadzone
-					localSpeed = 0;
-					// There's no error because we just want to stop
-					a = 0;
-				}
-				// Set the motors corrected for the error
-				backLeftMotor.set(localSpeed - a);
-				frontLeftMotor.set(localSpeed - a);
-				backRightMotor.set(localSpeed + a);
-				frontRightMotor.set(localSpeed + a);
+				angleSpeedTarget = a;
 			}
 		};
 
@@ -157,17 +151,14 @@ public class Drivetrain {
 		};
 
 		PIDOutput speedTargetWrite = new PIDOutput() {
-
-			private double lastGyroSpeed = 0;
-			private long lastGyroTime = System.nanoTime();
-
 			public void pidWrite(double a) {
 				HeadingRatePID.setSetpoint(a);
 			}
 		};
 
 		HeadingRatePID = new PIDController(RATE_P, RATE_I, RATE_D, 0, headingSpeed, motorWrite, 0.02);
-
+		HeadingRatePID.setPercentTolerance(0.05);
+		
 		HeadingAnglePID = new PIDController(ANGLE_P, ANGLE_I, ANGLE_D, 0, headingAbsolute, speedTargetWrite, 0.02) {
 			public void setSetpoint(double a) {
 				while (a > Math.PI * 2)
@@ -180,17 +171,18 @@ public class Drivetrain {
 		HeadingAnglePID.setInputRange(0, Math.PI * 2);
 		HeadingAnglePID.setContinuous(true);
 		HeadingAnglePID.setOutputRange(-maxTurnSpeed, maxTurnSpeed);
-		
 
 		strafeUpdate.start();
 		primaryUpdate.start();
+		angleUpdate.start();
+		motoWrite.start();
 	}
 
 	double angleLimit = Double.MAX_VALUE;
 	double strafeLimit = Double.MAX_VALUE;
 	double primaryLimit = Double.MAX_VALUE;
 
-	public void setAngleLimit(double a) {
+	public void setAngleAccelLimit(double a) {
 		angleLimit = a;
 	}
 
@@ -206,12 +198,12 @@ public class Drivetrain {
 
 	Thread strafeUpdate = new Thread(new Runnable() {
 		public void run() {
-		double absTime = System.nanoTime();
+			double currentStrafe = strafeMotor.get();
+			double absTime = System.nanoTime();
 			while (true) {
 				double exactTime = System.nanoTime();
-				double loopTime = (exactTime-absTime ) / 1000000000.0;
+				double loopTime = (exactTime - absTime) / 1000000000.0;
 				absTime = exactTime;
-				double currentStrafe = strafeMotor.get();
 				double loopStrafeLimit = strafeLimit * loopTime;
 				if (currentStrafe - strafeTargetPower > loopStrafeLimit) {
 					currentStrafe -= loopStrafeLimit;
@@ -221,10 +213,7 @@ public class Drivetrain {
 					currentStrafe = strafeTargetPower;
 				}
 
-				if (currentStrafe < 0.1 && currentStrafe > -0.1)
-					strafeMotor.set(0);
-				else
-					strafeMotor.set(currentStrafe);
+				strafeMotor.set(currentStrafe);
 
 				try {
 					Thread.sleep(20);
@@ -246,23 +235,22 @@ public class Drivetrain {
 
 	/**
 	 * in radians
+	 * 
 	 * @param a
 	 */
 	public void turn(double a) {
 		HeadingAnglePID.enable();
 		HeadingAnglePID.setSetpoint(a + gyro.getAngle());
 	}
-	
-
 
 	double primaryTargetPower = 0;
 
 	Thread primaryUpdate = new Thread(new Runnable() {
 		public void run() {
-		double absTime = System.nanoTime();
+			double absTime = System.nanoTime();
 			while (true) {
 				double exactTime = System.nanoTime();
-				double loopTime = ( exactTime-absTime ) / 1000000000.0;
+				double loopTime = (exactTime - absTime) / 1000000000.0;
 				absTime = exactTime;
 				double loopPrimaryLimit = primaryLimit * loopTime;
 				if (speed - primaryTargetPower > loopPrimaryLimit) {
@@ -272,8 +260,61 @@ public class Drivetrain {
 				} else {
 					speed = primaryTargetPower;
 				}
-				System.out.println("Target " + primaryTargetPower);
-				System.out.println("Speed " + speed);
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	});
+
+	Thread motoWrite = new Thread(new Runnable() {
+		public void run() {// Set the average of the speed on both sides to compensate for error
+			// in one direction
+			while (true) {
+				double localSpeed = speed;
+				double a = angleSpeed;
+				if (localSpeed > 1 - Math.abs(a))
+					localSpeed = 1 - Math.abs(a);
+				// to compensate in the other direction
+				else if (localSpeed < Math.abs(a) - 1)
+					localSpeed = Math.abs(a) - 1;
+				// Set a deadzone for the speed
+
+				/*
+				 * if (Math.abs(localSpeed) - Math.abs(a) < 0.15) {
+				 * // Set the speed to zero while in the deadzone
+				 * localSpeed = 0;
+				 * // There's no error because we just want to stop
+				 * a = 0;
+				 * }
+				 */
+				// Set the motors corrected for the error
+				backLeftMotor.set(localSpeed - a);
+				frontLeftMotor.set(localSpeed - a);
+				backRightMotor.set(localSpeed + a);
+				frontRightMotor.set(localSpeed + a);
+
+			}
+		}
+	});
+
+	Thread angleUpdate = new Thread(new Runnable() {
+		public void run() {
+			double absTime = System.nanoTime();
+			while (true) {
+				double exactTime = System.nanoTime();
+				double loopTime = (exactTime - absTime) / 1000000000.0;
+				absTime = exactTime;
+				double loopAngleLimit = angleLimit * loopTime;
+				if (angleSpeed - angleSpeedTarget > loopAngleLimit) {
+					angleSpeed -= loopAngleLimit;
+				} else if (speed - angleSpeedTarget < -loopAngleLimit) {
+					angleSpeed += loopAngleLimit;
+				} else {
+					angleSpeed = angleSpeedTarget;
+				}
 				try {
 					Thread.sleep(20);
 				} catch (InterruptedException e) {
@@ -290,8 +331,11 @@ public class Drivetrain {
 	public void setAngleTarget(double stickX) {
 		if (Math.abs(stickX) < 0.1) {
 			if (!HeadingAnglePID.isEnable()) {
-				HeadingAnglePID.setSetpoint(gyro.getAngle());
-				HeadingAnglePID.enable();
+				HeadingRatePID.setSetpoint(0);
+				if (HeadingRatePID.onTarget()) {
+					HeadingAnglePID.setSetpoint(gyro.getAngle());
+					HeadingAnglePID.enable();
+				}
 			}
 		} else {
 			HeadingAnglePID.disable();
