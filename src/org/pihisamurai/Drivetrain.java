@@ -13,7 +13,7 @@ public class Drivetrain {
 
 	private static final double ANGLE_P = 8;
 	private static final double ANGLE_I = 0; // Keep at 0
-	private static final double ANGLE_D = 0;//6;
+	private static final double ANGLE_D = 0;// 6;
 
 	private static final double RATE_P = 0.25;
 	private static final double RATE_I = 0.0; // Keep at 0
@@ -157,7 +157,7 @@ public class Drivetrain {
 		};
 
 		HeadingRatePID = new PIDController(RATE_P, RATE_I, RATE_D, 0, headingSpeed, motorWrite, 0.02);
-		
+
 		HeadingAnglePID = new PIDController(ANGLE_P, ANGLE_I, ANGLE_D, 0, headingAbsolute, speedTargetWrite, 0.02) {
 			public void setSetpoint(double a) {
 				while (a > Math.PI * 2)
@@ -327,17 +327,24 @@ public class Drivetrain {
 		primaryTargetPower = a;
 	}
 
+	boolean slowing = false;
+
 	public void setAngleTarget(double stickX) {
 		if (Math.abs(stickX) < 0.1) {
 			if (!HeadingAnglePID.isEnable()) {
-				HeadingRatePID.setSetpoint(0);
-				System.out.println(gyro.getRate() + " < " + Math.PI *2 *0.01);
-				if (Math.abs(gyro.getRate()) < Math.PI * 2 * 0.0001) {
+				slowing = true;
+				HeadingAnglePID.setSetpoint(gyro.getAngle());
+				HeadingAnglePID.enable();
+			} else {
+				if (slowing) {
 					HeadingAnglePID.setSetpoint(gyro.getAngle());
-					HeadingAnglePID.enable();
+					if (Math.abs(gyro.getRate()) < Math.PI * 2 * 0.0001) {
+						slowing = false;
+					}
 				}
 			}
 		} else {
+			slowing = false;
 			HeadingAnglePID.disable();
 			HeadingRatePID.setSetpoint(stickX * maxTurnSpeed);
 		}
