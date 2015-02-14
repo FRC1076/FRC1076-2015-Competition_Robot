@@ -138,7 +138,7 @@ public class Teleoperated implements RobotMode {
 		robot.drivetrain.setStrafeLimit(accelLimit);
 		robot.drivetrain.setAngleAccelLimit(turnAccelLimit);
 		
-		robot.drivetrain.setMaxTurnSpeed(turnSpeed);
+		robot.drivetrain.setMaxTurnSpeed(turnSpeed*speedModifier);
 		robot.drivetrain.setAngleTarget(robot.gamepad.getLeftX());
 
 		robot.drivetrain.setStrafe(robot.gamepad.getRightX()*speedModifier*1.33);
