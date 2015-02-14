@@ -17,10 +17,8 @@ public class Teleoperated implements RobotMode {
 		liftControl = true;
 		buttonA = false;
 		buttonPOV = 0;
-	}
+		
 
-	public void init() {
-		robot.drivetrain.start();
 		SmartDashboard.putNumber("Turn Speed 0 Boxes", 12);
 		SmartDashboard.putNumber("Turn Speed 1 Boxes", 12);
 		SmartDashboard.putNumber("Turn Speed 2 Boxes", 4.5);
@@ -44,6 +42,10 @@ public class Teleoperated implements RobotMode {
 		SmartDashboard.putNumber("Angle stick rate 4 boxes", 10000);
 		SmartDashboard.putNumber("Angle stick rate 5 boxes", 10000);
 		SmartDashboard.putNumber("Angle stick rate 6 boxes", 10000);
+	}
+
+	public void init() {
+		robot.drivetrain.start();
 	
 
 	}
