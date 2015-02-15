@@ -3,36 +3,45 @@ package org.pihisamurai;
 public class Autonomous {
 
 	private Robot robot;
-	double mode;
-	
-	public Autonomous(Robot r){
-		this.robot = r;
-	}
-	
-	double timer;
-	
-	public void run(){
+	int mode;
+	AutonomousForward autnomousForward;
+	AutonomousNothing autonomousNothing;
+	AutonomousTotes autonomousTotes;
 
-		robot.drivetrain.setAngleTarget(0);
-		robot.drivetrain.update();
-		if( (timer - System.nanoTime() / 1000000000.0) < 2000){
-			robot.drivetrain.setPrimary(0);
+	public Autonomous(Robot r) {
+		this.robot = r;
+		autnomousForward = new AutonomousForward(r);
+		autonomousNothing = new AutonomousNothing(r);
+		autonomousTotes = new AutonomousTotes(r);
+	}
+
+	public void run() {
+		switch (mode) {
+		case 0:
+			autonomousNothing.run();
+			break;
+		case 1:
+			autnomousForward.run();
+			break;
+		case 2:
+			autonomousTotes.run();
+			break;
 		}
 	}
-	
-	public void init(double d){
-		mode = d;
-		
-		robot.drivetrain.setPrimaryLimit(99999999999.0);
-		robot.drivetrain.setStrafeLimit(999999999999.0);
-		robot.drivetrain.setAngleAccelLimit(99999999999999.0);
-		
-		robot.drivetrain.setMaxTurnSpeed(999999999);
-		robot.drivetrain.setAngleTarget(0);
 
-		robot.drivetrain.setStrafe(0);
-		robot.drivetrain.setPrimary(-0.6);
-		
-		timer = System.nanoTime();
+	public void init(int d) {
+		mode = d;
+
+		switch (mode) {
+		case 0:
+			autonomousNothing.run();
+			break;
+		case 1:
+			autnomousForward.init();
+			break;
+		case 2:
+			autonomousTotes.init();
+			break;
+		}
 	}
 }
