@@ -1,6 +1,6 @@
 package org.pihisamurai;
 
-public class Disabled implements RobotMode {
+public class Disabled {
 
 	private Robot robot;
 
