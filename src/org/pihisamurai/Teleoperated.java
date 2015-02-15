@@ -1,8 +1,5 @@
 package org.pihisamurai;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.vision.USBCamera;
-
 public class Teleoperated {
 
 	private Robot robot;
@@ -19,8 +16,6 @@ public class Teleoperated {
 
 	public void init() {
 		robot.drivetrain.start();
-	
-
 	}
 
 	private int lastPOV = Gamepad.POV_OFF;
