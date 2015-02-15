@@ -18,7 +18,7 @@ public class Drivetrain {
 	private static final int RIGHT_ENCODER_CHANNEL_B = 2;
 
 	// Circumference of wheel, modified by gear ratio divided by number of pulses in one rotation of encoder
-	private static final double DISTANCE_PER_PULSE_MAIN = 4 * Math.PI / 360;
+	private static final double DISTANCE_PER_PULSE_MAIN = 4 * 0.0254 * Math.PI / 360;
 
 	private double maxTurnSpeed = 5; // Radians per second
 
@@ -39,7 +39,7 @@ public class Drivetrain {
 	private Robot robot;
 
 	public SpeedController speedController;
-	
+
 	double angleSpeedTarget = 0;
 	double angleSpeed = 0;
 	double speed = 0;
@@ -50,7 +50,7 @@ public class Drivetrain {
 		robot = r;
 
 		speedController = new SpeedController(r);
-		
+
 		SmartDashboard.putNumber("Angle P", 8);
 		SmartDashboard.putNumber("Angle I", 0);
 		SmartDashboard.putNumber("Angle D", 0);
@@ -116,7 +116,7 @@ public class Drivetrain {
 				if (Math.abs(p) < 0.05)
 					super.set(0);
 				else
-					super.set(p * 0.85);
+					super.set(p); // * 0.85);
 			}
 		};
 		frontRightMotor = new Jaguar(3) {
@@ -124,7 +124,7 @@ public class Drivetrain {
 				if (Math.abs(p) < 0.05)
 					super.set(0);
 				else
-					super.set(p * 0.85);
+					super.set(p);// * 0.85);
 			}
 		};
 		strafeMotor = new Jaguar(4) {
@@ -176,7 +176,7 @@ public class Drivetrain {
 		HeadingAnglePID.setInputRange(0, Math.PI * 2);
 		HeadingAnglePID.setContinuous(true);
 		HeadingAnglePID.setOutputRange(-maxTurnSpeed, maxTurnSpeed);
-		
+
 		PIDUpdate.start();
 	}
 
@@ -196,6 +196,10 @@ public class Drivetrain {
 
 		}
 	});
+	
+	public double getPriamryDist(){
+		return (leftEncoder.getDistance()+rightEncoder.getDistance())/2;
+	}
 
 	double angleLimit = Double.MAX_VALUE;
 	double strafeLimit = Double.MAX_VALUE;
