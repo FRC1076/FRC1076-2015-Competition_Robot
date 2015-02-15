@@ -31,7 +31,7 @@ public class Robot extends IterativeRobot {
 
 
 
-		SmartDashboard.putNumber("Autonomous Mode", 1);
+		SmartDashboard.putNumber("Autonomous Mode", 0);
 
     //    frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 
@@ -79,7 +79,7 @@ public class Robot extends IterativeRobot {
 
 	public void autonomousInit() {
 		System.out.println("Autonomous Mode");
-		autonomous.init(SmartDashboard.getNumber("Autonomous Mode"));
+		autonomous.init((int)SmartDashboard.getNumber("Autonomous Mode"));
 	}
 
 	public void autonomousPeriodic() {
