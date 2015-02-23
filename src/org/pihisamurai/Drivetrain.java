@@ -14,24 +14,38 @@ public class Drivetrain {
 	private static final int LEFT_ENCODER_CHANNEL_A = 0;
 	private static final int LEFT_ENCODER_CHANNEL_B = 1;
 
-	private static final int RIGHT_ENCODER_CHANNEL_A = 3;
-	private static final int RIGHT_ENCODER_CHANNEL_B = 2;
+	private static final int RIGHT_ENCODER_CHANNEL_A = 2;
+	private static final int RIGHT_ENCODER_CHANNEL_B = 3;
+	
+	private static final int STRAFE_ENCODER_CHANNEL_A = 4;
+	private static final int STRAFE_ENCODER_CHANNEL_B = 5;
+	
+	private static final int LEFT_MOTOR_A_PORT = 0;
+	private static final int LEFT_MOTOR_B_PORT = 1;
+	private static final int RIGHT_MOTOR_A_PORT = 2;
+	private static final int RIGHT_MOTOR_B_PORT = 3;
+	private static final int STRAFE_MOTOR_A_PORT = 4;
+	private static final int STRAFE_MOTOR_B_PORT = 5;
 
 	// Circumference of wheel, modified by gear ratio divided by number of pulses in one rotation of encoder
 	private static final double DISTANCE_PER_PULSE_MAIN = 4 * 0.0254 * Math.PI / 360;
+	
+	private static final double DISTANCE_PER_PULSE_STRAFE = 4 * 0.0254 * Math.PI / 360;
 
 	private double maxTurnSpeed = 5; // Radians per second
 
 	private Encoder leftEncoder;
 	private Encoder rightEncoder;
+	private Encoder strafeEncoder;
 
 	private Gyro gyro;
 
-	private Jaguar backLeftMotor;
-	private Jaguar frontLeftMotor;
-	private Jaguar backRightMotor;
-	private Jaguar frontRightMotor;
-	private Jaguar strafeMotor;
+	private Jaguar leftMotorA;
+	private Jaguar leftMotorB;
+	private Jaguar rightMotorA;
+	private Jaguar rightMotorB;
+	private Jaguar strafeMotorA;
+	private Jaguar strafeMotorB;
 
 	private PIDController HeadingRatePID;
 	private PIDController HeadingAnglePID;
@@ -45,15 +59,15 @@ public class Drivetrain {
 	double speed = 0;
 
 	private BuiltInAccelerometer accelerometer;
-
+	
 	public Drivetrain(Robot r) {
 		robot = r;
 
 		speedController = new SpeedController(r);
 
-		SmartDashboard.putNumber("Angle P", 8);
+		SmartDashboard.putNumber("Angle P", 6);
 		SmartDashboard.putNumber("Angle I", 0);
-		SmartDashboard.putNumber("Angle D", 0);
+		SmartDashboard.putNumber("Angle D", 2);
 
 		SmartDashboard.putNumber("Rate P", 0.25);
 		SmartDashboard.putNumber("Rate I", 0.0);
@@ -92,10 +106,13 @@ public class Drivetrain {
 
 		leftEncoder = new Encoder(LEFT_ENCODER_CHANNEL_A, LEFT_ENCODER_CHANNEL_B);
 		rightEncoder = new Encoder(RIGHT_ENCODER_CHANNEL_A, RIGHT_ENCODER_CHANNEL_B);
+		strafeEncoder = new Encoder(STRAFE_ENCODER_CHANNEL_A, STRAFE_ENCODER_CHANNEL_B);
 		leftEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_MAIN);
 		rightEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_MAIN);
+		
+		strafeEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_STRAFE);
 
-		backLeftMotor = new Jaguar(0) {
+		leftMotorA = new Jaguar(LEFT_MOTOR_A_PORT) {
 			public void set(double p) {
 				if (Math.abs(p) < 0.05)
 					super.set(0);
@@ -103,7 +120,7 @@ public class Drivetrain {
 					super.set(-p);
 			}
 		};
-		frontLeftMotor = new Jaguar(1) {
+		leftMotorB = new Jaguar(LEFT_MOTOR_B_PORT) {
 			public void set(double p) {
 				if (Math.abs(p) < 0.05)
 					super.set(0);
@@ -111,7 +128,7 @@ public class Drivetrain {
 					super.set(-p);
 			}
 		};
-		backRightMotor = new Jaguar(2) {
+		rightMotorA = new Jaguar(RIGHT_MOTOR_A_PORT) {
 			public void set(double p) {
 				if (Math.abs(p) < 0.05)
 					super.set(0);
@@ -119,7 +136,7 @@ public class Drivetrain {
 					super.set(p); // * 0.85);
 			}
 		};
-		frontRightMotor = new Jaguar(3) {
+		rightMotorB = new Jaguar(RIGHT_MOTOR_B_PORT) {
 			public void set(double p) {
 				if (Math.abs(p) < 0.05)
 					super.set(0);
@@ -127,12 +144,20 @@ public class Drivetrain {
 					super.set(p);// * 0.85);
 			}
 		};
-		strafeMotor = new Jaguar(4) {
+		strafeMotorA = new Jaguar(STRAFE_MOTOR_A_PORT) {
 			public void set(double p) {
 				if (Math.abs(p) < 0.05)
 					super.set(0);
 				else
-					super.set(p);
+					super.set(-p);
+			}
+		};
+		strafeMotorB = new Jaguar(STRAFE_MOTOR_B_PORT) {
+			public void set(double p) {
+				if (Math.abs(p) < 0.05)
+					super.set(0);
+				else
+					super.set(-p);
 			}
 		};
 
@@ -222,7 +247,7 @@ public class Drivetrain {
 	double strafeAbsTime = System.nanoTime();
 
 	public void strafeUpdateLoop() {
-		double currentStrafe = strafeMotor.get();
+		double currentStrafe = strafeMotorA.get();
 		double exactTime = System.nanoTime();
 		double loopTime = (exactTime - strafeAbsTime) / 1000000000.0;
 		strafeAbsTime = exactTime;
@@ -235,7 +260,8 @@ public class Drivetrain {
 			currentStrafe = strafeTargetPower;
 		}
 
-		strafeMotor.set(currentStrafe);
+		strafeMotorA.set(currentStrafe);
+		strafeMotorB.set(currentStrafe);
 
 		try {
 			Thread.sleep(20);
@@ -308,10 +334,10 @@ public class Drivetrain {
 		 * }
 		 */
 		// Set the motors corrected for the error
-		backLeftMotor.set(localSpeed - a);
-		frontLeftMotor.set(localSpeed - a);
-		backRightMotor.set(localSpeed + a);
-		frontRightMotor.set(localSpeed + a);
+		leftMotorA.set(localSpeed - a);
+		leftMotorB.set(localSpeed - a);
+		rightMotorA.set(localSpeed + a);
+		rightMotorB.set(localSpeed + a);
 
 	}
 

@@ -23,8 +23,8 @@ public class Robot extends IterativeRobot {
 	
     CameraServer server;
 
-  //  int session;
-  //  Image frame;
+    int session;
+    Image frame;
 
 	public void robotInit() {
 		System.out.println("Robot Code Started");
@@ -33,12 +33,12 @@ public class Robot extends IterativeRobot {
 
 		SmartDashboard.putNumber("Autonomous Mode", 0);
 
-    //    frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+        frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 
         // the camera name (ex "cam0") can be found through the roborio web interface
-    //    session = NIVision.IMAQdxOpenCamera("cam0",
-   //             NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-    //    NIVision.IMAQdxConfigureGrab(session);
+        session = NIVision.IMAQdxOpenCamera("cam1",
+                NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+        NIVision.IMAQdxConfigureGrab(session);
         
 		drivetrain = new Drivetrain(this);
 		manipulator = new Manipulator(this);
@@ -49,10 +49,10 @@ public class Robot extends IterativeRobot {
 		gamepad = new Gamepad(0); // Changed from 1 to 0
 		gamepad2 = new Gamepad(1); // Changed from 1 to 0
 		
-	//	camGet.start();
+		camGet.start();
 	}
 	
-	/*Thread camGet = new Thread(new Runnable(){
+	Thread camGet = new Thread(new Runnable(){
 		public void run() {
 	        NIVision.IMAQdxStartAcquisition(session);
 			while(true){
@@ -66,7 +66,7 @@ public class Robot extends IterativeRobot {
 			}
 	        //NIVision.IMAQdxStopAcquisition(session);
 		}
-	});*/
+	});
 
 	public void disabledInit() {
 		System.out.println("Robot Disabled");
