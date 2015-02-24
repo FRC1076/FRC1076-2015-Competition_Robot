@@ -1,10 +1,12 @@
 package org.pihisamurai;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Manipulator {
@@ -12,81 +14,129 @@ public class Manipulator {
 	private Robot robot;
 	private Jaguar LiftMotor;
 	private Encoder encoder;
-	
+
 	private static final int ENCODER_CHANNEL_A = 6;
 	private static final int ENCODER_CHANNEL_B = 7;
-	
+
 	private static final int ELEVATOR_MOTOR_PORT = 6;
 
-	private PIDController elevatorHeightPID;
+	private boolean locked = false;
 
-	
+	private double targetPower = 0;
+
+	private DigitalInput limitSwitch = new DigitalInput(8);
+	Servo servo = new Servo(9);
+
 	Manipulator(Robot r) {
 		this.robot = r;
-		LiftMotor = new Jaguar(ELEVATOR_MOTOR_PORT);
-		encoder = new Encoder(ENCODER_CHANNEL_A, ENCODER_CHANNEL_B);
-		
-		SmartDashboard.putNumber("Elevator P", 0);
-		SmartDashboard.putNumber("Elevator I", 0);
-		SmartDashboard.putNumber("Elevator D", 0);
-		
-		PIDSource manipulatorHeight = new PIDSource() {
-			public double pidGet() {
-				
-				//Needs to calibrate bottom/top limit switches
-				return encoder.getDistance();
-			} 
-		};
-		
-		PIDOutput maniputlaorWrite = new PIDOutput () {
-			public void pidWrite(double a) {
-				liftPower(a);
+		LiftMotor = new Jaguar(ELEVATOR_MOTOR_PORT){
+			public void set(double speed){
+				super.set(-speed);
 			}
+			
 		};
-		
-		elevatorHeightPID = new PIDController(SmartDashboard.getNumber("Elevator P"), SmartDashboard.getNumber("Elevator I"), SmartDashboard.getNumber("Elevator D"), manipulatorHeight, maniputlaorWrite, 0.02);
-		PIDUpdate.start();
+		encoder = new Encoder(ENCODER_CHANNEL_A, ENCODER_CHANNEL_B);
+		manipUpdate.start();
 	}
-	
-	Thread PIDUpdate = new Thread(new Runnable() {
+
+	private void liftPower(double power) {
+		power *= 0.7;
+
+		if (Math.abs(power) < 0.1) {
+			targetPower = 0;
+		} else {
+			targetPower = power;
+		}
+
+	}
+
+	Thread manipUpdate = new Thread(new Runnable() {
 		public void run() {
 			while (true) {
-				elevatorHeightPID.setPID(SmartDashboard.getNumber("Elevator P"), SmartDashboard.getNumber("Elevator I"),
-						SmartDashboard.getNumber("Elevator D"));
+				if (targetPower > 0) {
+					if (limitSwitch.get()) {
+						lock();
+						LiftMotor.set(targetPower);
+					}
+				} else if (targetPower < 0) {
+					unlock();
+					LiftMotor.set(targetPower);
+				} else {
+					LiftMotor.set(0);
+				}
+
 				try {
-					Thread.sleep(100);
+					Thread.sleep(20);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-
 		}
 	});
-	
-	public void setTargetHeight(double h){
-		elevatorHeightPID.setSetpoint(h);
-		elevatorHeightPID.enable();
+
+	private void lock() {
+		if (locked)
+			return;
+		servo.set(0.5);
+		locked = true;
 	}
-	
-	private void liftPower(double power){
-		
-		power *= 0.7;
-		//TEMPORARY
-		
-		if (Math.abs(power) < 0.1) {
-			LiftMotor.set(0);
-		} else {
-			LiftMotor.set(power);
+
+	private void unlock() {
+		if (!locked)
+			return;
+		locked = false;
+		servo.set(0);
+		LiftMotor.set(1);
+		try {
+			Thread.sleep(20); // not exact may be to short or too long
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+		LiftMotor.set(0);
 	}
 
 	public void setLiftPower(double power) {
-		elevatorHeightPID.disable();
 		liftPower(power);
 	}
-
-	public boolean atTarget() {
-		return elevatorHeightPID.onTarget(); //TODO
-	}
-
 }
+
+/*
+ * PIDSource manipulatorHeight = new PIDSource() {
+ * public double pidGet() {
+ * 
+ * //Needs to calibrate bottom/top limit switches
+ * return encoder.getDistance();
+ * }
+ * };
+ * 
+ * PIDOutput maniputlaorWrite = new PIDOutput () {
+ * public void pidWrite(double a) {
+ * liftPower(a);
+ * }
+ * };
+ * 
+ * elevatorHeightPID = new PIDController(SmartDashboard.getNumber("Elevator P"), SmartDashboard.getNumber("Elevator I"),
+ * SmartDashboard.getNumber("Elevator D"), manipulatorHeight, maniputlaorWrite, 0.02);
+ * PIDUpdate.start();
+ * 
+ * 
+ * Thread PIDUpdate = new Thread(new Runnable() {
+ * public void run() {
+ * while (true) {
+ * elevatorHeightPID.setPID(SmartDashboard.getNumber("Elevator P"), SmartDashboard.getNumber("Elevator I"),
+ * SmartDashboard.getNumber("Elevator D"));
+ * try {
+ * Thread.sleep(100);
+ * } catch (InterruptedException e) {
+ * e.printStackTrace();
+ * }
+ * }
+ * 
+ * }
+ * });
+ * 
+ * public void setTargetHeight(double h){
+ * elevatorHeightPID.setSetpoint(h);
+ * elevatorHeightPID.enable();
+ * }
+ */

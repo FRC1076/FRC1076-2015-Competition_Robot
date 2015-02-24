@@ -1,11 +1,14 @@
 package org.pihisamurai;
 
+import edu.wpi.first.wpilibj.Servo;
+
 public class Teleoperated {
 
 	private Robot robot;
 	boolean liftControl;
 	double buttonPOV;
 	boolean buttonA;
+	
 	
 	public Teleoperated(Robot r) {
 		this.robot = r;
