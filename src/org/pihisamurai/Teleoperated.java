@@ -93,11 +93,11 @@ public class Teleoperated {
 				break;
 			}
 		}
-		if (Math.abs(robot.gamepad.getLeftTrigger() - robot.gamepad.getRightTrigger()) > Math.abs(robot.gamepad2
-				.getLeftTrigger() - robot.gamepad2.getRightTrigger())) {
-			robot.manipulator.setLiftPower((robot.gamepad.getLeftTrigger() - robot.gamepad.getRightTrigger()) * 2);
+		if (Math.abs(robot.gamepad.getRightTrigger() - robot.gamepad.getLeftTrigger()) > Math.abs(robot.gamepad2
+				.getRightTrigger() - robot.gamepad2.getLeftTrigger())) {
+			robot.manipulator.setLiftPower((robot.gamepad.getRightTrigger() - robot.gamepad.getLeftTrigger()) * 2);
 		} else {
-			robot.manipulator.setLiftPower((robot.gamepad2.getLeftTrigger() - robot.gamepad2.getRightTrigger()) * 2);
+			robot.manipulator.setLiftPower((robot.gamepad2.getRightTrigger() - robot.gamepad2.getLeftTrigger()) * 2);
 		}
 		
 		robot.drivetrain.speedController.setTurnSpeedModifier(speedModifier);
