@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivetrain {
 
+	// You are going to have to comment on this, Avery
+
 	private static final int LEFT_ENCODER_CHANNEL_A = 0;
 	private static final int LEFT_ENCODER_CHANNEL_B = 1;
 

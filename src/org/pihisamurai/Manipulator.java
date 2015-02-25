@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Manipulator {
 
+	// A "robot" variable to access methods therein:
 	private Robot robot;
+	// For the motor of the lift:
 	private Jaguar LiftMotor;
 	private Encoder encoder;
 
@@ -28,6 +30,7 @@ public class Manipulator {
 	Servo servo = new Servo(9);
 
 	Manipulator(Robot r) {
+		// Initialization of variable values:
 		this.robot = r;
 		LiftMotor = new Jaguar(ELEVATOR_MOTOR_PORT){
 			public void set(double speed){
@@ -99,44 +102,3 @@ public class Manipulator {
 		liftPower(power);
 	}
 }
-
-/*
- * PIDSource manipulatorHeight = new PIDSource() {
- * public double pidGet() {
- * 
- * //Needs to calibrate bottom/top limit switches
- * return encoder.getDistance();
- * }
- * };
- * 
- * PIDOutput maniputlaorWrite = new PIDOutput () {
- * public void pidWrite(double a) {
- * liftPower(a);
- * }
- * };
- * 
- * elevatorHeightPID = new PIDController(SmartDashboard.getNumber("Elevator P"), SmartDashboard.getNumber("Elevator I"),
- * SmartDashboard.getNumber("Elevator D"), manipulatorHeight, maniputlaorWrite, 0.02);
- * PIDUpdate.start();
- * 
- * 
- * Thread PIDUpdate = new Thread(new Runnable() {
- * public void run() {
- * while (true) {
- * elevatorHeightPID.setPID(SmartDashboard.getNumber("Elevator P"), SmartDashboard.getNumber("Elevator I"),
- * SmartDashboard.getNumber("Elevator D"));
- * try {
- * Thread.sleep(100);
- * } catch (InterruptedException e) {
- * e.printStackTrace();
- * }
- * }
- * 
- * }
- * });
- * 
- * public void setTargetHeight(double h){
- * elevatorHeightPID.setSetpoint(h);
- * elevatorHeightPID.enable();
- * }
- */
