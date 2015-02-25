@@ -68,29 +68,41 @@ public class Robot extends IterativeRobot {
 		}
 	});*/
 
+	// The initial function called on start of disabled mode 
+
 	public void disabledInit() {
 		System.out.println("Robot Disabled");
 		disabled.init();
 	}
 
+	// The function called roughly every twenty milliseconds during disabled mode 
+
 	public void disabledPeriodic() {
 		disabled.run();
 	}
+
+	// The initial function called on start of autonomous mode 
 
 	public void autonomousInit() {
 		System.out.println("Autonomous Mode");
 		autonomous.init((int)SmartDashboard.getNumber("Autonomous Mode"));
 	}
 
+	// The function called roughly every twenty milliseconds during disabled mode 
+
 	public void autonomousPeriodic() {
 		autonomous.run();
 		drivetrain.update();
 	}
 
+	// The initial function called on start of teleop
+
 	public void teleopInit() {
 		System.out.println("Teleoperated Mode");
 		teleop.init();
 	}
+
+	// The function called roughly every twenty milliseconds during teleop 
 
 	public void teleopPeriodic() {
 		teleop.run();

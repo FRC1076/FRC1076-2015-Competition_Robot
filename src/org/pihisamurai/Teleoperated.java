@@ -2,87 +2,78 @@ package org.pihisamurai;
 
 public class Teleoperated {
 
+	// A "robot" variable to access methods therein
 	private Robot robot;
-	boolean liftControl;
-	double buttonPOV;
-	boolean buttonA;
-	
+	// For detecting button change on the D-pad of gamepad 1
+	private int lastPOV = Gamepad.POV_OFF;
+
 	public Teleoperated(Robot r) {
+		// Initialization of variable values:
 		this.robot = r;
-		liftControl = true;
-		buttonA = false;
-		buttonPOV = 0;
 	}
 
 	public void init() {
 		robot.drivetrain.start();
 	}
 
-	private int lastPOV = Gamepad.POV_OFF;
-
 	public void run() {
 		
 		double speedModifier = 1;
-		
-		if(robot.gamepad2.getButtonA() != buttonA && !buttonA) {
-			robot.drivetrain.speedController.setBoxCount(0);
-		}
-		if (robot.gamepad2.getPOV() != buttonPOV && robot.gamepad2.getPOV() == 0) {
-			if (robot.drivetrain.speedController.getBoxCount() < 6) {
-				robot.drivetrain.speedController.setBoxCount(robot.drivetrain.speedController.getBoxCount()+1);
-			}
-		} else if (robot.gamepad2.getPOV() != buttonPOV && robot.gamepad2.getPOV() == 180) {
-			if (robot.drivetrain.speedController.getBoxCount() > 0) {
-				robot.drivetrain.speedController.setBoxCount(robot.drivetrain.speedController.getBoxCount()-1);
-			}
-		}
-		buttonPOV = robot.gamepad2.getPOV();
-		buttonA = robot.gamepad2.getButtonA();
+		int POV = robot.gamepad.ifPOVChange();
 
-		int POV = robot.gamepad.getPOV();
+		// Increasing and decreasing the box count
+		if(robot.gamepad2.ifButtonAChange() && robot.gamepad2.getButtonA()) {
+			robot.drivetrain.speedController.setBoxCount(0);
+			// Zeros the box count
+		}
+		if (POV == 0) {
+			if (robot.drivetrain.speedController.getBoxCount() < 6) {
+				robot.drivetrain.speedController.setBoxCount(robot.drivetrain.speedController.getBoxCount() + 1);
+				// Increases the box count if it is below 6.
+			}
+		} else if (POV == 180) {
+			if (robot.drivetrain.speedController.getBoxCount() > 0) {
+				robot.drivetrain.speedController.setBoxCount(robot.drivetrain.speedController.getBoxCount() - 1);
+				// Decreases the box count if it is above 0.
+			}
+		}
 
 		speedModifier = 0.75;
-		if (robot.gamepad.getButtonRightBack()) 
+		if (robot.gamepad.getButtonRightBack()) {
 			speedModifier = 1;
-		 else if(robot.gamepad.getButtonLeftBack()) 
+		}
+		else if(robot.gamepad.getButtonLeftBack()) {
 			speedModifier = 0.5;
-		
+		}
 
-		if (POV != lastPOV) {
-			lastPOV = POV;/*
-			if(POV == 0);
-			else if(POV <= 180)
-				robot.drivetrain.turn((POV/45) * Math.PI / 4);
-			else if(POV > 180 && POV < 360){
-				POV-=180;
-				robot.drivetrain.turn((-POV/45) * Math.PI / 4);
-			}*/
+		// If the D-pad input changed, do one of these turns
+		if (POV != -2) {
 			switch (POV) {
-			case Gamepad.POV_UP://0
+			case Gamepad.POV_UP: // 0
 				// Currently Meaningless
 				break;
-			case Gamepad.POV_UP_RIGHT://45\9
+			case Gamepad.POV_UP_RIGHT: // 45
 				robot.drivetrain.turn(1 * Math.PI / 4);
 				break;
-			case Gamepad.POV_RIGHT://90
+			case Gamepad.POV_RIGHT: // 90
 				robot.drivetrain.turn(2 * Math.PI / 4);
 				break;
-			case Gamepad.POV_DOWN_RIGHT://135
+			case Gamepad.POV_DOWN_RIGHT: // 135
 				robot.drivetrain.turn(3 * Math.PI / 4);
 				break;
-			case Gamepad.POV_DOWN://180
+			case Gamepad.POV_DOWN: // 180
 				robot.drivetrain.turn(4 * Math.PI / 4);
 				break;
-			case Gamepad.POV_DOWN_LEFT://225
+			case Gamepad.POV_DOWN_LEFT: // 225
 				robot.drivetrain.turn(-3 * Math.PI / 4);
 				break;
-			case Gamepad.POV_LEFT://270
+			case Gamepad.POV_LEFT: // 270
 				robot.drivetrain.turn(-2 * Math.PI / 4);
 				break;
-			case Gamepad.POV_UP_LEFT://315
+			case Gamepad.POV_UP_LEFT: // 315
 				robot.drivetrain.turn(-1 * Math.PI / 4);
 				break;
-			case Gamepad.POV_OFF://-1
+			case Gamepad.POV_OFF: // -1
 				// Do nothing
 				break;
 			default:
@@ -90,18 +81,26 @@ public class Teleoperated {
 				break;
 			}
 		}
+
+		// Decides which gamepad is pressing the triggers the hardest;
+		// Said gamepad controls the lift.
 		if (Math.abs(robot.gamepad.getLeftTrigger() - robot.gamepad.getRightTrigger()) > Math.abs(robot.gamepad2
 				.getLeftTrigger() - robot.gamepad2.getRightTrigger())) {
+			// For gamepad 1:
 			robot.manipulator.liftPower((robot.gamepad.getLeftTrigger() - robot.gamepad.getRightTrigger()) * 2);
 		} else {
+			// For gamepad 2:
 			robot.manipulator.liftPower((robot.gamepad2.getLeftTrigger() - robot.gamepad2.getRightTrigger()) * 2);
 		}
-		
-		robot.drivetrain.speedController.setTurnSpeedModifier(speedModifier);
-		
-		robot.drivetrain.setStrafe(robot.gamepad.getRightX()*speedModifier*1.33);
-		robot.drivetrain.setPrimary(robot.gamepad.getRightY()*speedModifier);
 
+		// Sets the modifier for the turn:
+		robot.drivetrain.speedController.setTurnSpeedModifier(speedModifier);
+
+		// Moves the robot in regards to the right stick by the speed multiplier.
+		robot.drivetrain.setStrafe(robot.gamepad.getRightX() * speedModifier * 1.33);
+		robot.drivetrain.setPrimary(robot.gamepad.getRightY() * speedModifier);
+
+		// Turns the robot in regards to the left stick by the speed multiplier.
 		robot.drivetrain.setAngleTarget(robot.gamepad.getLeftX());
 		
 	}
