@@ -129,7 +129,6 @@ public class Gamepad {
 
 	public boolean ifButtonAChange() {
 		if(getNumberedButton(BUTTON_A) != lastPress[BUTTON_A]) {
-			lastPress[BUTTON_A] = getNumberedButton(BUTTON_A);
 			return true;
 		}
 		return false;
@@ -137,7 +136,6 @@ public class Gamepad {
 
 	public boolean ifButtonBChange() {
 		if(getNumberedButton(BUTTON_B) != lastPress[BUTTON_B]) {
-			lastPress[BUTTON_B] = getNumberedButton(BUTTON_B);
 			return true;
 		}
 		return false;
@@ -145,7 +143,6 @@ public class Gamepad {
 
 	public boolean ifButtonXChange() {
 		if(getNumberedButton(BUTTON_X) != lastPress[BUTTON_X]) {
-			lastPress[BUTTON_X] = getNumberedButton(BUTTON_X);
 			return true;
 		}
 		return false;
@@ -153,7 +150,6 @@ public class Gamepad {
 
 	public boolean ifButtonYChange() {
 		if(getNumberedButton(BUTTON_Y) != lastPress[BUTTON_Y]) {
-			lastPress[BUTTON_Y] = getNumberedButton(BUTTON_Y);
 			return true;
 		}
 		return false;
@@ -161,7 +157,6 @@ public class Gamepad {
 
 	public boolean ifLeftBackChange() {
 		if(getNumberedButton(BUTTON_LB) != lastPress[BUTTON_LB]) {
-			lastPress[BUTTON_LB] = getNumberedButton(BUTTON_LB);
 			return true;
 		}
 		return false;
@@ -169,7 +164,6 @@ public class Gamepad {
 
 	public boolean ifRightBackChange() {
 		if(getNumberedButton(BUTTON_RB) != lastPress[BUTTON_RB]) {
-			lastPress[BUTTON_RB] = getNumberedButton(BUTTON_RB);
 			return true;
 		}
 		return false;
@@ -177,7 +171,6 @@ public class Gamepad {
 
 	public boolean ifButtonBackChange() {
 		if(getNumberedButton(BUTTON_BACK) != lastPress[BUTTON_BACK]) {
-			lastPress[BUTTON_BACK] = getNumberedButton(BUTTON_BACK);
 			return true;
 		}
 		return false;
@@ -185,7 +178,6 @@ public class Gamepad {
 
 	public boolean ifButtonLeftStickChange() {
 		if(getNumberedButton(BUTTON_LEFT_STICK_PUSH) != lastPress[BUTTON_LEFT_STICK_PUSH]) {
-			lastPress[BUTTON_LEFT_STICK_PUSH] = getNumberedButton(BUTTON_LEFT_STICK_PUSH);
 			return true;
 		}
 		return false;
@@ -193,17 +185,22 @@ public class Gamepad {
 
 	public boolean ifButtonRightStickChange() {
 		if(getNumberedButton(BUTTON_RIGHT_STICK_PUSH) != lastPress[BUTTON_RIGHT_STICK_PUSH]) {
-			lastPress[BUTTON_RIGHT_STICK_PUSH] = getNumberedButton(BUTTON_RIGHT_STICK_PUSH);
 			return true;
 		}
 		return false;
 	}
 
-	public int ifPOVChange() {
+	public boolean ifPOVChange() {
 		if(this.getPOV() != lastPOV) {
-			lastPOV = this.getPOV();
-			return lastPOV;
+			return true;
 		}
-		return -2;
+		return false;
+	}
+	
+	public void update() {
+		for (byte i = 1; i < 11; i++) {
+			lastPress[i] = getNumberedButton(i);
+		}
+		lastPOV = this.getPOV();
 	}
 }

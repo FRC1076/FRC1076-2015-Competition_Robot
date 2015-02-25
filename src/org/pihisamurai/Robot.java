@@ -107,6 +107,8 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		teleop.run();
 		drivetrain.update();
+		gamepad.update();
+		gamepad2.update();
 	}
 
 	public void testInit() {

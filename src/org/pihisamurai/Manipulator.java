@@ -22,9 +22,9 @@ public class Manipulator {
 
 	private static final int ELEVATOR_MOTOR_PORT = 6;
 
-	private boolean locked = false;
+	private boolean locked;
 
-	private double targetPower = 0;
+	private double targetPower;
 
 	private DigitalInput limitSwitch = new DigitalInput(8);
 	Servo servo = new Servo(9);
@@ -32,11 +32,12 @@ public class Manipulator {
 	Manipulator(Robot r) {
 		// Initialization of variable values:
 		this.robot = r;
+		locked = false;
+		targetPower = 0;
 		LiftMotor = new Jaguar(ELEVATOR_MOTOR_PORT){
 			public void set(double speed){
 				super.set(-speed);
 			}
-			
 		};
 		encoder = new Encoder(ENCODER_CHANNEL_A, ENCODER_CHANNEL_B);
 		manipUpdate.start();
@@ -78,24 +79,24 @@ public class Manipulator {
 	});
 
 	private void lock() {
-		if (locked)
-			return;
-		servo.set(0.5);
 		locked = true;
+		if (!locked) {
+			servo.set(0.5);
+		}
 	}
 
 	private void unlock() {
-		if (!locked)
-			return;
 		locked = false;
-		servo.set(0);
-		LiftMotor.set(1);
-		try {
-			Thread.sleep(20); // not exact may be to short or too long
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if (locked) {
+			servo.set(0);
+			LiftMotor.set(1);
+			try {
+				Thread.sleep(20); // not exact may be to short or too long
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			LiftMotor.set(0);
 		}
-		LiftMotor.set(0);
 	}
 
 	public void setLiftPower(double power) {

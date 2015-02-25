@@ -4,10 +4,11 @@ import edu.wpi.first.wpilibj.Servo;
 
 public class Teleoperated {
 
-	// A "robot" variable to access methods therein
+	// A "robot" variable to access methods therein:
 	private Robot robot;
-	// For detecting button change on the D-pad of gamepad 1
+	// For detecting button change on the D-pad of gamepad 1:
 	private int lastPOV = Gamepad.POV_OFF;
+	double speedModifier = 1;
 
 	public Teleoperated(Robot r) {
 		// Initialization of variable values:
@@ -19,38 +20,36 @@ public class Teleoperated {
 	}
 
 	public void run() {
-		
-		double speedModifier = 1;
-		int POV = robot.gamepad.ifPOVChange();
-
-		// Increasing and decreasing the box count
+		// Increasing and decreasing the box count.
 		if(robot.gamepad2.ifButtonAChange() && robot.gamepad2.getButtonA()) {
 			robot.drivetrain.speedController.setBoxCount(0);
-			// Zeros the box count
+			// Zeros the box count.
 		}
-		if (POV == 0) {
+		if (robot.gamepad.ifPOVChange() && robot.gamepad.getPOV() == 0) {
 			if (robot.drivetrain.speedController.getBoxCount() < 6) {
 				robot.drivetrain.speedController.setBoxCount(robot.drivetrain.speedController.getBoxCount() + 1);
 				// Increases the box count if it is below 6.
 			}
-		} else if (POV == 180) {
+		} else if (robot.gamepad.ifPOVChange() && robot.gamepad.getPOV() == 180) {
 			if (robot.drivetrain.speedController.getBoxCount() > 0) {
 				robot.drivetrain.speedController.setBoxCount(robot.drivetrain.speedController.getBoxCount() - 1);
 				// Decreases the box count if it is above 0.
 			}
 		}
 
+		// Updates the speed modifier.
 		speedModifier = 0.75;
 		if (robot.gamepad.getButtonRightBack()) {
-			speedModifier = 1;
-		}
-		else if(robot.gamepad.getButtonLeftBack()) {
-			speedModifier = 0.5;
+			speedModifier += 0.25;
+			// Full speed if the right secondary trigger is pushed.
+		} if(robot.gamepad.getButtonLeftBack()) {
+			speedModifier -= 0.25;
+			// Full speed if the left secondary trigger is pushed.
 		}
 
 		// If the D-pad input changed, do one of these turns
-		if (POV != -2) {
-			switch (POV) {
+		if (robot.gamepad.ifPOVChange()) {
+			switch (robot.gamepad.getPOV()) {
 			case Gamepad.POV_UP: // 0
 				// Currently Meaningless
 				break;
@@ -79,15 +78,16 @@ public class Teleoperated {
 				// Do nothing
 				break;
 			default:
-				System.out.println("UNKNOWN POV ANGLE: " + POV);
+				System.out.println("UNKNOWN POV ANGLE: " + robot.gamepad.getPOV());
 				break;
 			}
 		}
 
-		//Decides which gamepad is pressing the triggers the hardest;
+		// Decides which gamepad is pressing the triggers the hardest;
 		// Said gamepad controls the lift.
 		if (Math.abs(robot.gamepad.getRightTrigger() - robot.gamepad.getLeftTrigger()) > Math.abs(robot.gamepad2
 				.getRightTrigger() - robot.gamepad2.getLeftTrigger())) {
+			// For gamepad 1:
 			robot.manipulator.setLiftPower((robot.gamepad.getRightTrigger() - robot.gamepad.getLeftTrigger()) * 2);
 		} else {
 			//For gamepad 2:
@@ -103,6 +103,5 @@ public class Teleoperated {
 
 		// Turns the robot in regards to the left stick by the speed multiplier.
 		robot.drivetrain.setAngleTarget(robot.gamepad.getLeftX());
-		
 	}
 }
