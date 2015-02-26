@@ -18,7 +18,7 @@ public class Robot extends IterativeRobot {
 	public Disabled disabled;
 	
 
-	public Gamepad gamepad;
+	public Gamepad gamepad1;
 	public Gamepad gamepad2;
 	
     CameraServer server;
@@ -29,27 +29,35 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		System.out.println("Robot Code Started");
 
-
-
 		SmartDashboard.putNumber("Autonomous Mode", 0);
 
-        frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+		try {
+			// The camera name (ex.: "cam0") can be found through the roborio web interface
+			session = NIVision.IMAQdxOpenCamera("cam0",
+					NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+			NIVision.IMAQdxConfigureGrab(session);
+			camGet.start();
+		} catch (Exception e) {
+			try {
+				// The camera name (ex.: "cam1") can be found through the roborio web interface
+				session = NIVision.IMAQdxOpenCamera("cam1",
+						NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+				NIVision.IMAQdxConfigureGrab(session);
+				camGet.start();
+			} catch (Exception x) {
+				// I give up
+			}
+		}
 
-        // the camera name (ex "cam0") can be found through the roborio web interface
-        session = NIVision.IMAQdxOpenCamera("cam0",
-                NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-        NIVision.IMAQdxConfigureGrab(session);
-        
 		drivetrain = new Drivetrain(this);
 		manipulator = new Manipulator(this);
 		teleop = new Teleoperated(this);
 		test = new Test(this);
 		autonomous = new Autonomous(this);
 		disabled = new Disabled(this);
-		gamepad = new Gamepad(0); // Changed from 1 to 0
-		gamepad2 = new Gamepad(1); // Changed from 1 to 0
-		
-		camGet.start();
+		gamepad1 = new Gamepad(0);
+		gamepad2 = new Gamepad(1);
 	}
 	
 	Thread camGet = new Thread(new Runnable(){
@@ -107,7 +115,7 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		teleop.run();
 		drivetrain.update();
-		gamepad.update();
+		gamepad1.update();
 		gamepad2.update();
 	}
 

@@ -17,10 +17,11 @@ public class AutonomousForward {
 		robot.drivetrain.setAngleTarget(0);
 
 		robot.drivetrain.setStrafe(0);
-		if (robot.drivetrain.getPriamryDist() - start > 5)
+		if (robot.drivetrain.getDistPrimary() - start > 5) {
 			robot.drivetrain.setPrimary(0);
-		else
+		} else {
 			robot.drivetrain.setPrimary(-0.6);
+		}
 	}
 
 	public void init() {
@@ -30,7 +31,7 @@ public class AutonomousForward {
 		robot.drivetrain.setAngleAccelLimit(99999999999999.0);
 		robot.drivetrain.setMaxTurnSpeed(999999999.0);
 		
-		start = robot.drivetrain.getPriamryDist();
+		start = robot.drivetrain.getDistPrimary();
 	}
 
 }

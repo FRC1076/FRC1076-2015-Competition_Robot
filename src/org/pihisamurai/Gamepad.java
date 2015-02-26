@@ -127,6 +127,8 @@ public class Gamepad {
 		return getNumberedButton(BUTTON_RIGHT_STICK_PUSH);
 	}
 
+	// Functions to check if the input has changed since last update.
+
 	public boolean ifButtonAChange() {
 		if(getNumberedButton(BUTTON_A) != lastPress[BUTTON_A]) {
 			return true;
@@ -196,7 +198,8 @@ public class Gamepad {
 		}
 		return false;
 	}
-	
+
+	// Updates the array for the gamepad:
 	public void update() {
 		for (byte i = 1; i < 11; i++) {
 			lastPress[i] = getNumberedButton(i);

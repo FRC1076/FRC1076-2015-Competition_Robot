@@ -220,12 +220,31 @@ public class Drivetrain {
 					e.printStackTrace();
 				}
 			}
-
 		}
 	});
 	
-	public double getPriamryDist(){
-		return (leftEncoder.getDistance()+rightEncoder.getDistance())/2;
+	public double getDistPrimary(){
+		return (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2;
+	}
+	
+	public double getDistStrafe(){
+		return strafeEncoder.getDistance();
+	}
+	
+	public void goDistPrimary(double dist, double power) {
+		double init = this.getDistPrimary();
+		power = (Double.isFinite(power)) ? power : 0.5;
+		while (Math.abs(this.getDistPrimary() - init) >= Math.abs(dist)) {
+			this.setPrimary(Math.abs(power) * ((dist < 0) ? -1 : 1));
+		}
+	}
+	
+	public void goDistStrafe(double dist, double power) {
+		double init = this.getDistStrafe();
+		power = (Double.isFinite(power)) ? power : 0.5;
+		while (Math.abs(this.getDistStrafe() - init) >= Math.abs(dist)) {
+			this.setPrimary(Math.abs(power) * ((dist < 0) ? -1 : 1));
+		}
 	}
 
 	double angleLimit = Double.MAX_VALUE;
