@@ -18,22 +18,32 @@ public class LEDcontroller {
 	LEDcontroller (Robot r) {
 		this.robot = r;
 		port = new SerialPort(2400, SerialPort.Port.kMXP, 8, SerialPort.Parity.kNone, SerialPort.StopBits.kOne);
+
+		
+		setDriveTrainLeft(PROTOCOL_STOP);
+		setDriveTrainRight(PROTOCOL_STOP);
+		setLift(PROTOCOL_STOP);
 	}
 	
-	public void setLights(byte light, byte direction) {
-		port.write(new byte[]{light, direction}, 2);
+	private byte[] state = new byte[]{4,4,4};
+	
+	private void setLights(byte light, byte direction) {
+		if(state[light] != direction){
+			state[light] = direction;
+			port.write(new byte[]{light, direction}, 2);
+		}
 	}
 	
 	public void setDriveTrainLeft(byte direction) {
-		port.write(new byte[]{LEDcontroller.DRIVETRAIN_LEFT, direction}, 2);
+		setLights(LEDcontroller.DRIVETRAIN_LEFT, direction);
 	}
 	
 	public void setDriveTrainRight(byte direction) {
-		port.write(new byte[]{LEDcontroller.DRIVETRAIN_RIGHT, direction}, 2);
+		setLights(LEDcontroller.DRIVETRAIN_RIGHT, direction);
 	}
 	
 	public void setLift(byte direction) {
-		port.write(new byte[]{LEDcontroller.LIFT, direction}, 2);
+		setLights(LEDcontroller.LIFT, direction);
 	}
 	
 }
