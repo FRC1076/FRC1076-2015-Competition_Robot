@@ -100,6 +100,8 @@ public class Manipulator {
 	}
 
 	public void setLiftPower(double power) {
+		robot.ledcontroller.setLift((power < 0.05) ? ((Math.abs(power) < 0.05) ? LEDcontroller.PROTOCOL_STOP 
+				: LEDcontroller.PROTOCOL_BACKWARD) : LEDcontroller.PROTOCOL_FORWARD);
 		liftPower(power);
 	}
 }

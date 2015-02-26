@@ -394,6 +394,10 @@ public class Drivetrain {
 	}
 
 	public void setPrimary(double a) {
+		robot.ledcontroller.setDriveTrainLeft((a < 0.05) ? ((Math.abs(a) < 0.05) ? LEDcontroller.PROTOCOL_STOP 
+				: LEDcontroller.PROTOCOL_BACKWARD) : LEDcontroller.PROTOCOL_FORWARD);
+		robot.ledcontroller.setDriveTrainRight((a < 0.05) ? ((Math.abs(a) < 0.05) ? LEDcontroller.PROTOCOL_STOP 
+				: LEDcontroller.PROTOCOL_BACKWARD) : LEDcontroller.PROTOCOL_FORWARD);
 		primaryTargetPower = a;
 	}
 

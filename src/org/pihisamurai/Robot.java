@@ -16,10 +16,11 @@ public class Robot extends IterativeRobot {
 	public Test test;
 	public Autonomous autonomous;
 	public Disabled disabled;
-	
 
 	public Gamepad gamepad1;
 	public Gamepad gamepad2;
+	
+	public LEDcontroller ledcontroller;
 	
     CameraServer server;
 

@@ -7,13 +7,13 @@ public class LEDcontroller {
 	private Robot robot;
 	private SerialPort port;
 	
-	private static final byte DRIVETRAIN_LEFT = 0;
-	private static final byte DRIVETRAIN_RIGHT = 1;
-	private static final byte LIFT = 2;
+	public static final byte DRIVETRAIN_LEFT = 0;
+	public static final byte DRIVETRAIN_RIGHT = 1;
+	public static final byte LIFT = 2;
 
-	private static final byte PROTOCOL_FORWARD = 1;
-	private static final byte PROTOCOL_BACKWARD = 2;
-	private static final byte PROTOCOL_STOP = 0;
+	public static final byte PROTOCOL_FORWARD = 1;
+	public static final byte PROTOCOL_BACKWARD = 2;
+	public static final byte PROTOCOL_STOP = 0;
 
 	LEDcontroller (Robot r) {
 		this.robot = r;
@@ -35,4 +35,5 @@ public class LEDcontroller {
 	public void setLift(byte direction) {
 		port.write(new byte[]{LEDcontroller.LIFT, direction}, 2);
 	}
+	
 }
