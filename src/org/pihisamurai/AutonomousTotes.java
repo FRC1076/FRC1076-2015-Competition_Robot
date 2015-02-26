@@ -6,12 +6,10 @@ public class AutonomousTotes {
 
 	// UltrasonicSensor ultrasonic = new UltrasonicSensor(2);
 	// InfraredSensor infrared = new InfraredSensor(1);
-	private int[] cmd;
 
 	AutonomousTotes(Robot robot, String code) {
 		this.robot = robot;
-		cmd = parse(code);
-		execute(cmd);
+		execute(parse(code));
 	}
 
 	private int[] parse(String code) {
@@ -38,7 +36,7 @@ public class AutonomousTotes {
 		}
 		return list;
 	}
-	
+
 	public void execute(int[] c) {
 		double[] stack = new double[12];
 		int pointer = 0;
@@ -97,7 +95,7 @@ public class AutonomousTotes {
 			}
 		}
 	}
-	
+
 	/*
 	private int state;
 	private double startDist;
