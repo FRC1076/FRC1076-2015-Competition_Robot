@@ -59,6 +59,7 @@ public class Robot extends IterativeRobot {
 		disabled = new Disabled(this);
 		gamepad1 = new Gamepad(0);
 		gamepad2 = new Gamepad(1);
+		ledcontroller = new LEDcontroller(this);
 	}
 	
 	Thread camGet = new Thread(new Runnable(){
@@ -81,6 +82,8 @@ public class Robot extends IterativeRobot {
 
 	public void disabledInit() {
 		System.out.println("Robot Disabled");
+		ledcontroller.disable();
+		assert disabled != null;
 		disabled.init();
 	}
 

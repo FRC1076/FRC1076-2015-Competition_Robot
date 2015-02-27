@@ -12,7 +12,7 @@ public class Autonomous {
 		this.robot = r;
 		autnomousForward = new AutonomousForward(r);
 		autonomousNothing = new AutonomousNothing(r);
-		autonomousTotes = new AutonomousTotes(r, "2; 1; 5 d u l");
+		autonomousTotes = new AutonomousTotes(r);
 	}
 
 	public void run() {
@@ -24,7 +24,7 @@ public class Autonomous {
 			autnomousForward.run();
 			break;
 		case 2:
-			// autonomousTotes.run();
+			autonomousTotes.run();
 			break;
 		}
 	}
@@ -40,7 +40,7 @@ public class Autonomous {
 			autnomousForward.init();
 			break;
 		case 2:
-			// autonomousTotes.init();
+			autonomousTotes.init("2 d 1 u 5 l");
 			break;
 		}
 	}

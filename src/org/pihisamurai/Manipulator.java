@@ -27,7 +27,7 @@ public class Manipulator {
 	private double targetPower;
 
 	private DigitalInput limitSwitch = new DigitalInput(8);
-	Servo servo = new Servo(9);
+	Servo servo = new Servo(7);
 
 	Manipulator(Robot r) {
 		// Initialization of variable values:
@@ -57,15 +57,16 @@ public class Manipulator {
 	Thread manipUpdate = new Thread(new Runnable() {
 		public void run() {
 			while (true) {
-				if (targetPower > 0) {
-					if (limitSwitch.get()) {
-						lock();
+				if (targetPower < -0.05) {
+					if (!limitSwitch.get()) {
+						unlock();
 						LiftMotor.set(targetPower);
 					}
-				} else if (targetPower < 0) {
-					unlock();
+				} else if (targetPower > 0.05) {
+					lock();
 					LiftMotor.set(targetPower);
 				} else {
+					lock();
 					LiftMotor.set(0);
 				}
 
@@ -78,16 +79,10 @@ public class Manipulator {
 		}
 	});
 
-	private void lock() {
-		locked = true;
-		if (!locked) {
-			servo.set(0.5);
-		}
-	}
-
 	private void unlock() {
-		locked = false;
-		if (locked) {
+		
+		if (!locked) {
+			locked = true;
 			servo.set(0);
 			LiftMotor.set(1);
 			try {
@@ -96,6 +91,14 @@ public class Manipulator {
 				e.printStackTrace();
 			}
 			LiftMotor.set(0);
+		}
+	}
+
+	private void lock() {
+		if (locked) {
+			locked = false;
+			servo.set(0.5);
+
 		}
 	}
 
