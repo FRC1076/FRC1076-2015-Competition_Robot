@@ -67,9 +67,9 @@ public class Drivetrain {
 
 		speedController = new SpeedController(r);
 
-		SmartDashboard.putNumber("Angle P", 6);
+		SmartDashboard.putNumber("Angle P", 7);
 		SmartDashboard.putNumber("Angle I", 0);
-		SmartDashboard.putNumber("Angle D", 2);
+		SmartDashboard.putNumber("Angle D", 1);
 
 		SmartDashboard.putNumber("Rate P", 0.25);
 		SmartDashboard.putNumber("Rate I", 0.0);
@@ -93,6 +93,7 @@ public class Drivetrain {
 		// gyro.setSensitivity(0.7);
 
 		accelerometer = new BuiltInAccelerometer() {
+			// Super uses gs as the unit, we use m/s^2, multiply by 1g
 			public double getX() {
 				return super.getX() * 9.80665;
 			}
@@ -261,6 +262,7 @@ public class Drivetrain {
 
 	public void setPrimaryLimit(double a) {
 		primaryLimit = a;
+		
 	}
 
 	double strafeTargetPower = 0;
@@ -272,11 +274,12 @@ public class Drivetrain {
 		double exactTime = System.nanoTime();
 		double loopTime = (exactTime - strafeAbsTime) / 1000000000.0;
 		strafeAbsTime = exactTime;
-		double loopStrafeLimit = strafeLimit * loopTime;
-		if (currentStrafe - strafeTargetPower > loopStrafeLimit) {
-			currentStrafe -= loopStrafeLimit;
-		} else if (currentStrafe - strafeTargetPower < -loopStrafeLimit) {
-			currentStrafe += loopStrafeLimit;
+		double accelLimit = strafeLimit * loopTime;
+		System.out.println(accelLimit);
+		if (currentStrafe - strafeTargetPower > accelLimit) {
+			currentStrafe -= accelLimit;
+		} else if (currentStrafe - strafeTargetPower < -accelLimit) {
+			currentStrafe += accelLimit;
 		} else {
 			currentStrafe = strafeTargetPower;
 		}
@@ -284,11 +287,12 @@ public class Drivetrain {
 		strafeMotorA.set(currentStrafe);
 		strafeMotorB.set(currentStrafe);
 
-		try {
+		// TODO(Avery): WTF
+		/*try {
 			Thread.sleep(20);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	public void setStrafe(double power) {
