@@ -1,14 +1,16 @@
 package org.pihisamurai;
 
 import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Teleoperated {
 
 	// A "robot" variable to access methods therein:
 	private Robot robot;
-	// Tracks the speed modifiers:
+	// Tracks the primary speed modifiers:
 	double speedModifier = 1;
-	public static final boolean IS_TANK = false;
+	// Tracks the lift motor speed modifiers:
+	double liftModifier = 1;
 
 	public Teleoperated(Robot r) {
 		// Initialization of variable values:
@@ -81,16 +83,25 @@ public class Teleoperated {
 				break;
 			}
 		}
-	
+
+		// The lift motor speed modifier for gamepad 2;
+		// Begins at full speed and is slowed with each button pressed.
+		liftModifier = 1;
+		if(robot.gamepad2.getButtonLeftBack()) {
+			liftModifier -= 0.25;
+		} if(robot.gamepad2.getButtonRightBack()) {
+			liftModifier -= 0.25;
+		}
+
 		// Decides which gamepad is pressing the triggers the hardest;
 		// Said gamepad controls the lift.
-		if (Math.abs(robot.gamepad1.getRightTrigger() - robot.gamepad1.getLeftTrigger()) > Math.abs(robot.gamepad2
+		if (Math.abs(robot.gamepad1.getRightTrigger() - robot.gamepad1.getLeftTrigger()) > liftModifier * Math.abs(robot.gamepad2
 				.getRightTrigger() - robot.gamepad2.getLeftTrigger())) {
 			// For gamepad 1:
 			robot.manipulator.setLiftPower((robot.gamepad1.getRightTrigger() - robot.gamepad1.getLeftTrigger()) * 2);
 		} else {
 			//For gamepad 2:
-			robot.manipulator.setLiftPower((robot.gamepad2.getRightTrigger() - robot.gamepad2.getLeftTrigger()) * 2);
+			robot.manipulator.setLiftPower(liftModifier * (robot.gamepad2.getRightTrigger() - robot.gamepad2.getLeftTrigger()) * 2);
 		}
 	
 		// Sets the modifier for the turn:
@@ -102,5 +113,9 @@ public class Teleoperated {
 	
 		// Turns the robot in regards to the left stick by the speed multiplier.
 		robot.drivetrain.setAngleTarget(robot.gamepad1.getLeftX());
+
+		// Prints out the encoder numbers.
+		SmartDashboard.putNumber("Encoder Primary", robot.drivetrain.getDistPrimary());
+		SmartDashboard.putNumber("Encoder Strafe", robot.drivetrain.getDistStrafe());
 	}
 }

@@ -9,9 +9,9 @@ public class AutonomousNothing {
 	AutonomousNothing(Robot robot) {
 		this.robot = robot;
 	}
-	
-	
+
 	public void run() {
+		// Do nothing!
 	}
 
 	public void init() {

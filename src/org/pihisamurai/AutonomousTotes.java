@@ -106,6 +106,6 @@ public class AutonomousTotes {
 	}
 
 	public void run () {
-		
+		robot.drivetrain.update();
 	}
 }

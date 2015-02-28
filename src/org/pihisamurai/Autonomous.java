@@ -4,14 +4,16 @@ public class Autonomous {
 
 	private Robot robot;
 	int mode;
-	AutonomousForward autnomousForward;
 	AutonomousNothing autonomousNothing;
+	AutonomousForward autnomousForward;
+	AutonomousStrafe autonomousStrafe;
 	AutonomousTotes autonomousTotes;
 
 	public Autonomous(Robot r) {
 		this.robot = r;
-		autnomousForward = new AutonomousForward(r);
 		autonomousNothing = new AutonomousNothing(r);
+		autnomousForward = new AutonomousForward(r);
+		autonomousStrafe = new AutonomousStrafe(r);
 		autonomousTotes = new AutonomousTotes(r);
 	}
 
@@ -24,6 +26,9 @@ public class Autonomous {
 			autnomousForward.run();
 			break;
 		case 2:
+			autonomousStrafe.run();
+			break;
+		case 3:
 			autonomousTotes.run();
 			break;
 		}
@@ -35,12 +40,15 @@ public class Autonomous {
 		System.out.print(mode);
 		switch (mode) {
 		case 0:
-			autonomousNothing.run();
+			autonomousNothing.init();
 			break;
 		case 1:
 			autnomousForward.init();
 			break;
 		case 2:
+			autonomousStrafe.init();
+			break;
+		case 3:
 			autonomousTotes.init("2 d 1 u 5 l");
 			break;
 		}

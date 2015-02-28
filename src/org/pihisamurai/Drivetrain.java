@@ -46,8 +46,8 @@ public class Drivetrain {
 	public Jaguar leftMotorB;
 	public Jaguar rightMotorA;
 	public Jaguar rightMotorB;
-	private Jaguar strafeMotorA;
-	private Jaguar strafeMotorB;
+	public Jaguar strafeMotorA;
+	public Jaguar strafeMotorB;
 
 	private PIDController HeadingRatePID;
 	private PIDController HeadingAnglePID;
@@ -236,15 +236,15 @@ public class Drivetrain {
 		(new Thread (new Runnable () {
 			public void run () {
 				double init = getDistPrimary();
+				setPrimary(Math.abs(power) * ((dist < 0) ? -1 : 1));
 				while (Math.abs(getDistPrimary() - init) <= Math.abs(dist)) {
-					setPrimary(Math.abs(power) * ((dist < 0) ? -1 : 1));
 					try {
 						Thread.sleep(20);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					
 				}
+				setPrimary(0);
 			}
 		})).start();
 	}
@@ -253,9 +253,15 @@ public class Drivetrain {
 		(new Thread (new Runnable () {
 			public void run () {
 				double init = getDistStrafe();
+				setStrafe(Math.abs(power) * ((dist < 0) ? -1 : 1));
 				while (Math.abs(getDistStrafe() - init) <= Math.abs(dist)) {
-					setStrafe(Math.abs(power) * ((dist < 0) ? -1 : 1));
+					try {
+						Thread.sleep(20);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
+				setStrafe(0);
 			}
 		})).start();
 	}
@@ -315,7 +321,7 @@ public class Drivetrain {
 	}
 
 	/**
-	 * in radians
+	 * In radians.
 	 * 
 	 * @param a
 	 */
@@ -405,6 +411,13 @@ public class Drivetrain {
 		angleUpdateLoop();
 		strafeUpdateLoop();
 		motoWriteLoop();
+	}
+	
+	public void setAll(double a) {
+		leftMotorA.set(a);
+		leftMotorB.set(a);
+		rightMotorA.set(a);
+		rightMotorB.set(a);
 	}
 
 	public void setPrimary(double a) {

@@ -47,7 +47,7 @@ public class Robot extends IterativeRobot {
 				NIVision.IMAQdxConfigureGrab(session);
 				camGet.start();
 			} catch (Exception x) {
-				// I give up
+				x.printStackTrace();
 			}
 		}
 
@@ -100,11 +100,11 @@ public class Robot extends IterativeRobot {
 		autonomous.init((int)SmartDashboard.getNumber("Autonomous Mode"));
 	}
 
-	// The function called roughly every twenty milliseconds during fi mode 
+	// The function called roughly every twenty milliseconds during autonomous mode 
 
 	public void autonomousPeriodic() {
 		autonomous.run();
-		//drivetrain.update();
+		// drivetrain.update();
 	}
 
 	// The initial function called on start of teleop
