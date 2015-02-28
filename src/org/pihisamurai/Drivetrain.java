@@ -42,10 +42,10 @@ public class Drivetrain {
 
 	private Gyro gyro;
 
-	private Jaguar leftMotorA;
-	private Jaguar leftMotorB;
-	private Jaguar rightMotorA;
-	private Jaguar rightMotorB;
+	public Jaguar leftMotorA;
+	public Jaguar leftMotorB;
+	public Jaguar rightMotorA;
+	public Jaguar rightMotorB;
 	private Jaguar strafeMotorA;
 	private Jaguar strafeMotorB;
 
@@ -67,9 +67,9 @@ public class Drivetrain {
 
 		speedController = new SpeedController(r);
 
-		SmartDashboard.putNumber("Angle P", 6);
+		SmartDashboard.putNumber("Angle P", 7);
 		SmartDashboard.putNumber("Angle I", 0);
-		SmartDashboard.putNumber("Angle D", 2);
+		SmartDashboard.putNumber("Angle D", 1);
 
 		SmartDashboard.putNumber("Rate P", 0.25);
 		SmartDashboard.putNumber("Rate I", 0.0);
@@ -119,7 +119,7 @@ public class Drivetrain {
 				if (Math.abs(p) < 0.05)
 					super.set(0);
 				else
-					super.set(-p);
+					super.set(-p * 0.85);
 			}
 		};
 		leftMotorB = new Jaguar(LEFT_MOTOR_B_PORT) {
@@ -127,7 +127,7 @@ public class Drivetrain {
 				if (Math.abs(p) < 0.05)
 					super.set(0);
 				else
-					super.set(-p);
+					super.set(-p * 0.85);
 			}
 		};
 		rightMotorA = new Jaguar(RIGHT_MOTOR_A_PORT) {
@@ -135,7 +135,7 @@ public class Drivetrain {
 				if (Math.abs(p) < 0.05)
 					super.set(0);
 				else
-					super.set(p); // * 0.85);
+					super.set(p);
 			}
 		};
 		rightMotorB = new Jaguar(RIGHT_MOTOR_B_PORT) {
@@ -143,7 +143,7 @@ public class Drivetrain {
 				if (Math.abs(p) < 0.05)
 					super.set(0);
 				else
-					super.set(p);// * 0.85);
+					super.set(p);
 			}
 		};
 		strafeMotorA = new Jaguar(STRAFE_MOTOR_A_PORT) {
@@ -232,19 +232,31 @@ public class Drivetrain {
 	}
 	
 	public void goDistPrimary(double dist, double power) {
-		double init = this.getDistPrimary();
-		power = (Double.isFinite(power)) ? power : 0.5;
-		while (Math.abs(this.getDistPrimary() - init) >= Math.abs(dist)) {
-			this.setPrimary(Math.abs(power) * ((dist < 0) ? -1 : 1));
-		}
+		(new Thread (new Runnable () {
+			public void run () {
+				double init = getDistPrimary();
+				while (Math.abs(getDistPrimary() - init) <= Math.abs(dist)) {
+					setPrimary(Math.abs(power) * ((dist < 0) ? -1 : 1));
+					try {
+						Thread.sleep(20);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+				}
+			}
+		})).start();
 	}
 	
 	public void goDistStrafe(double dist, double power) {
-		double init = this.getDistStrafe();
-		power = (Double.isFinite(power)) ? power : 0.5;
-		while (Math.abs(this.getDistStrafe() - init) >= Math.abs(dist)) {
-			this.setPrimary(Math.abs(power) * ((dist < 0) ? -1 : 1));
-		}
+		(new Thread (new Runnable () {
+			public void run () {
+				double init = getDistStrafe();
+				while (Math.abs(getDistStrafe() - init) <= Math.abs(dist)) {
+					setStrafe(Math.abs(power) * ((dist < 0) ? -1 : 1));
+				}
+			}
+		})).start();
 	}
 
 	double angleLimit = Double.MAX_VALUE;
@@ -283,12 +295,12 @@ public class Drivetrain {
 
 		strafeMotorA.set(currentStrafe);
 		strafeMotorB.set(currentStrafe);
-
-		try {
+		//TODO: WTF rm?
+		/*try {
 			Thread.sleep(20);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	public void setStrafe(double power) {
@@ -394,10 +406,10 @@ public class Drivetrain {
 	}
 
 	public void setPrimary(double a) {
-		robot.ledcontroller.setDriveTrainLeft((a < 0.05) ? ((Math.abs(a) < 0.05) ? LEDcontroller.PROTOCOL_STOP 
+		/*robot.ledcontroller.setDriveTrainLeft((a < 0.05) ? ((Math.abs(a) < 0.05) ? LEDcontroller.PROTOCOL_STOP 
 				: LEDcontroller.PROTOCOL_BACKWARD) : LEDcontroller.PROTOCOL_FORWARD);
 		robot.ledcontroller.setDriveTrainRight((a < 0.05) ? ((Math.abs(a) < 0.05) ? LEDcontroller.PROTOCOL_STOP 
-				: LEDcontroller.PROTOCOL_BACKWARD) : LEDcontroller.PROTOCOL_FORWARD);
+				: LEDcontroller.PROTOCOL_BACKWARD) : LEDcontroller.PROTOCOL_FORWARD);*/
 		primaryTargetPower = a;
 	}
 
