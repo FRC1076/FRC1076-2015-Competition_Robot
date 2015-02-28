@@ -30,7 +30,7 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		System.out.println("Robot Code Started");
 
-		SmartDashboard.putNumber("Autonomous Mode", 0);
+		SmartDashboard.putNumber("Autonomous Mode", 1);
 
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 		try {
@@ -104,7 +104,7 @@ public class Robot extends IterativeRobot {
 
 	public void autonomousPeriodic() {
 		autonomous.run();
-		drivetrain.update();
+		//drivetrain.update();
 	}
 
 	// The initial function called on start of teleop
