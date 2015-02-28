@@ -1,11 +1,14 @@
 package org.pihisamurai;
 
+import edu.wpi.first.wpilibj.Jaguar;
+
 public class Teleoperated {
 
 	// A "robot" variable to access methods therein:
 	private Robot robot;
 	// Tracks the speed modifiers:
 	double speedModifier = 1;
+	public static final boolean IS_TANK = false;
 
 	public Teleoperated(Robot r) {
 		// Initialization of variable values:
@@ -34,17 +37,17 @@ public class Teleoperated {
 				// Decreases the box count if it is above 0.
 			}
 		}
-
+	
 		// Updates the speed modifier.
-		speedModifier = 0.75;
+		speedModifier = 0.5;
 		if (robot.gamepad1.getButtonRightBack()) {
 			speedModifier += 0.25;
 			// Full speed if the right secondary trigger is pushed.
 		} if(robot.gamepad1.getButtonLeftBack()) {
-			speedModifier -= 0.25;
+			speedModifier += 0.25;
 			// Full speed if the left secondary trigger is pushed.
 		}
-
+	
 		// If the D-pad input changed, do one of these turns
 		if (robot.gamepad1.ifPOVChange()) {
 			switch (robot.gamepad1.getPOV()) {
@@ -78,7 +81,7 @@ public class Teleoperated {
 				break;
 			}
 		}
-
+	
 		// Decides which gamepad is pressing the triggers the hardest;
 		// Said gamepad controls the lift.
 		if (Math.abs(robot.gamepad1.getRightTrigger() - robot.gamepad1.getLeftTrigger()) > Math.abs(robot.gamepad2
@@ -89,14 +92,14 @@ public class Teleoperated {
 			//For gamepad 2:
 			robot.manipulator.setLiftPower((robot.gamepad2.getRightTrigger() - robot.gamepad2.getLeftTrigger()) * 2);
 		}
-
+	
 		// Sets the modifier for the turn:
 		robot.drivetrain.speedController.setTurnSpeedModifier(speedModifier);
-
+	
 		// Moves the robot in regards to the right stick by the speed multiplier.
-		robot.drivetrain.setStrafe(robot.gamepad1.getRightX() * speedModifier * 1.33);
+		robot.drivetrain.setStrafe(robot.gamepad1.getRightX() * speedModifier);
 		robot.drivetrain.setPrimary(robot.gamepad1.getRightY() * speedModifier);
-
+	
 		// Turns the robot in regards to the left stick by the speed multiplier.
 		robot.drivetrain.setAngleTarget(robot.gamepad1.getLeftX());
 	}
