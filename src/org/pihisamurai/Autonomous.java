@@ -32,6 +32,7 @@ public class Autonomous {
 	public void init(int d) {
 		mode = d;
 
+		System.out.print(mode);
 		switch (mode) {
 		case 0:
 			autonomousNothing.run();
