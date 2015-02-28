@@ -1,37 +1,41 @@
 package org.pihisamurai;
 
+import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class AutonomousForward {
 
 	Robot robot;
-
+	
 	AutonomousForward(Robot robot) {
 		this.robot = robot;
 	}
 
 	double start;
+	double time;
 
 	public void run() {
 
-		robot.drivetrain.speedController.setTurnSpeedModifier(1);
 		
-		robot.drivetrain.setAngleTarget(0);
+		if ((System.nanoTime() / 1000000000) - time > 5){
 
-		robot.drivetrain.setStrafe(0);
-		if (robot.drivetrain.getDistPrimary() - start > 5) {
-			robot.drivetrain.setPrimary(0);
+			robot.drivetrain.leftMotorA.set(0);
+			robot.drivetrain.leftMotorB.set(0);
+			robot.drivetrain.rightMotorA.set(0);
+			robot.drivetrain.rightMotorB.set(0);
 		} else {
-			robot.drivetrain.setPrimary(-0.6);
+
+			robot.drivetrain.leftMotorA.set(-0.5);
+			robot.drivetrain.leftMotorB.set(-0.5);
+			robot.drivetrain.rightMotorA.set(-0.5);
+			robot.drivetrain.rightMotorB.set(-0.5);
 		}
+		
+		
 	}
 
 	public void init() {
-
-		robot.drivetrain.setPrimaryLimit(99999999999.0);
-		robot.drivetrain.setStrafeLimit(999999999999.0);
-		robot.drivetrain.setAngleAccelLimit(99999999999999.0);
-		robot.drivetrain.setMaxTurnSpeed(999999999.0);
-		
-		start = robot.drivetrain.getDistPrimary();
+		time = System.nanoTime() / 1000000000;
 	}
 
 }
