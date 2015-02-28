@@ -51,20 +51,19 @@ public class Manipulator {
 		} else {
 			targetPower = power;
 		}
-
 	}
 
 	Thread manipUpdate = new Thread(new Runnable() {
 		public void run() {
 			while (true) {
 				if (targetPower < -0.05) {
+					unlock();
+					LiftMotor.set(targetPower);
+				} else if (targetPower > 0.05) {
 					if (!limitSwitch.get()) {
-						unlock();
+						lock();
 						LiftMotor.set(targetPower);
 					}
-				} else if (targetPower > 0.05) {
-					lock();
-					LiftMotor.set(targetPower);
 				} else {
 					lock();
 					LiftMotor.set(0);
@@ -84,13 +83,20 @@ public class Manipulator {
 		if (!locked) {
 			locked = true;
 			servo.set(0);
-			LiftMotor.set(1);
-			try {
-				Thread.sleep(20); // not exact may be to short or too long
+
+			/*try {
+				Thread.sleep(75); // not exact may be to short or too long
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			LiftMotor.set(0);
+			
+			LiftMotor.set(1);
+			try {
+				Thread.sleep(10); // not exact may be to short or too long
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			LiftMotor.set(0);*/
 		}
 	}
 
@@ -98,13 +104,12 @@ public class Manipulator {
 		if (locked) {
 			locked = false;
 			servo.set(0.5);
-
 		}
 	}
 
 	public void setLiftPower(double power) {
-		robot.ledcontroller.setLift((power < 0.05) ? ((Math.abs(power) < 0.05) ? LEDcontroller.PROTOCOL_STOP 
-				: LEDcontroller.PROTOCOL_BACKWARD) : LEDcontroller.PROTOCOL_FORWARD);
+		/*robot.ledcontroller.setLift((power < 0.05) ? ((Math.abs(power) < 0.05) ? LEDcontroller.PROTOCOL_STOP 
+				: LEDcontroller.PROTOCOL_BACKWARD) : LEDcontroller.PROTOCOL_FORWARD);*/
 		liftPower(power);
 	}
 }
