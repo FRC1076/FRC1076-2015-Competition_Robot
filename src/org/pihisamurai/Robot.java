@@ -100,7 +100,7 @@ public class Robot extends IterativeRobot {
 		autonomous.init((int)SmartDashboard.getNumber("Autonomous Mode"));
 	}
 
-	// The function called roughly every twenty milliseconds during disabled mode 
+	// The function called roughly every twenty milliseconds during fi mode 
 
 	public void autonomousPeriodic() {
 		autonomous.run();
