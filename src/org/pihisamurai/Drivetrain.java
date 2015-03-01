@@ -11,17 +11,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivetrain {
 
-	// You are going to have to comment on this, Avery
-
+	// Define the ports we use on roborio digital IO for encoders
 	private static final int LEFT_ENCODER_CHANNEL_A = 0;
 	private static final int LEFT_ENCODER_CHANNEL_B = 1;
 
 	private static final int RIGHT_ENCODER_CHANNEL_A = 2;
 	private static final int RIGHT_ENCODER_CHANNEL_B = 3;
-	
+
 	private static final int STRAFE_ENCODER_CHANNEL_A = 4;
 	private static final int STRAFE_ENCODER_CHANNEL_B = 5;
-	
+
+	// Define the ports we use on roborio PWM ports for jaguars
 	private static final int LEFT_MOTOR_A_PORT = 0;
 	private static final int LEFT_MOTOR_B_PORT = 1;
 	private static final int RIGHT_MOTOR_A_PORT = 2;
@@ -29,19 +29,26 @@ public class Drivetrain {
 	private static final int STRAFE_MOTOR_A_PORT = 4;
 	private static final int STRAFE_MOTOR_B_PORT = 5;
 
+	// Analoginput port for gyro
+	private static final int GYRO_PORT = 0;
+
 	// Circumference of wheel, modified by gear ratio divided by number of pulses in one rotation of encoder
 	private static final double DISTANCE_PER_PULSE_MAIN = 4 * 0.0254 * Math.PI / 360;
-	
+
 	private static final double DISTANCE_PER_PULSE_STRAFE = 4 * 0.0254 * Math.PI / 360;
 
+	// Holds max turn speed for robot
 	private double maxTurnSpeed = 5; // Radians per second
 
+	// Encoders for drivetrain
 	private Encoder leftEncoder;
 	private Encoder rightEncoder;
 	private Encoder strafeEncoder;
 
+	// Gyro for rotate correction
 	private Gyro gyro;
 
+	// Jaguars (drive motors)
 	public Jaguar leftMotorA;
 	public Jaguar leftMotorB;
 	public Jaguar rightMotorA;
@@ -49,21 +56,28 @@ public class Drivetrain {
 	public Jaguar strafeMotorA;
 	public Jaguar strafeMotorB;
 
+	// PID Controllers, see WPILib Documentation for how they work
 	private PIDController HeadingRatePID;
 	private PIDController HeadingAnglePID;
 
+	// Speed controller class controls the below values as a function of box count
 	public SpeedController speedController;
 
+	double strafeTargetPower = 0;
 	double angleSpeedTarget = 0;
 	double angleSpeed = 0;
 	double speed = 0;
 
-	private BuiltInAccelerometer accelerometer;
-	
+	// Variables used by speed controlle
+	double angleLimit = Double.MAX_VALUE; // amount anglerSpeed can change value per second
+	double strafeLimit = Double.MAX_VALUE; // amount strafe can change value per second
+	double primaryLimit = Double.MAX_VALUE; // amount primarymotors can change value per second
+
 	public Drivetrain() {
 
 		speedController = new SpeedController(this);
 
+		// Put default PID values on dashboard
 		SmartDashboard.putNumber("Angle P", 7);
 		SmartDashboard.putNumber("Angle I", 0);
 		SmartDashboard.putNumber("Angle D", 1);
@@ -72,7 +86,9 @@ public class Drivetrain {
 		SmartDashboard.putNumber("Rate I", 0.0);
 		SmartDashboard.putNumber("Rate D", 0.05);
 
-		gyro = new Gyro(0) {
+		// Make a gyro on analog port defined above that uses radians instead of degrees
+		// Change getAngle so it always returns a value between 0 and two Pi
+		gyro = new Gyro(GYRO_PORT) {
 			public double getAngle() {
 				double a = Math.toRadians(super.getAngle());
 				while (a > Math.PI * 2)
@@ -87,31 +103,21 @@ public class Drivetrain {
 			}
 		};
 
-		// gyro.setSensitivity(0.7);
-
-		accelerometer = new BuiltInAccelerometer() {
-			// Super uses gs as the unit, we use m/s^2, multiply by 1g
-			public double getX() {
-				return super.getX() * 9.80665;
-			}
-
-			public double getY() {
-				return super.getZ() * 9.80665;
-			}
-
-			public double getZ() {
-				return super.getY() * 9.80665;
-			}
-		};
-
+		// Declare the encoders using the ports defined in constants
 		leftEncoder = new Encoder(LEFT_ENCODER_CHANNEL_A, LEFT_ENCODER_CHANNEL_B);
 		rightEncoder = new Encoder(RIGHT_ENCODER_CHANNEL_A, RIGHT_ENCODER_CHANNEL_B);
 		strafeEncoder = new Encoder(STRAFE_ENCODER_CHANNEL_A, STRAFE_ENCODER_CHANNEL_B);
+
+		// Define the distance the robot moves per one pules of the encoder
 		leftEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_MAIN);
 		rightEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_MAIN);
-		
+
 		strafeEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_STRAFE);
 
+		// Declare our motor controllers
+		// Disable them for any low signal (below 5%)
+		// Slow down the left side as it is faster
+		// Flip direction of strafe
 		leftMotorA = new Jaguar(LEFT_MOTOR_A_PORT) {
 			public void set(double p) {
 				if (Math.abs(p) < 0.05)
@@ -161,33 +167,42 @@ public class Drivetrain {
 			}
 		};
 
+		// PID Loop based off heading
+
+		// PID Input (angular speed)
 		PIDSource headingSpeed = new PIDSource() {
 			public double pidGet() {
 				return gyro.getRate();
 			}
 		};
 
+		// take PID functions output and make set angleSpeedTarget
 		PIDOutput motorWrite = new PIDOutput() {
 			public void pidWrite(double a) {
 				angleSpeedTarget = a;
 			}
 		};
 
+		HeadingRatePID = new PIDController(SmartDashboard.getNumber("Rate P"), SmartDashboard.getNumber("Rate I"),
+				SmartDashboard.getNumber("Rate D"), 0, headingSpeed, motorWrite, 0.02);
+
+		// PID Loop based of orientation
+
+		// PID input (robot angle)
 		PIDSource headingAbsolute = new PIDSource() {
 			public double pidGet() { // Angle Robot at
 				return gyro.getAngle();
 			}
 		};
 
+		// take PID functions output and make set headingRatePIDs target
 		PIDOutput speedTargetWrite = new PIDOutput() {
 			public void pidWrite(double a) {
 				HeadingRatePID.setSetpoint(a);
 			}
 		};
 
-		HeadingRatePID = new PIDController(SmartDashboard.getNumber("Rate P"), SmartDashboard.getNumber("Rate I"),
-				SmartDashboard.getNumber("Rate D"), 0, headingSpeed, motorWrite, 0.02);
-
+		// Make PID Controller be able to handle inputs not in 0-2Pi range
 		HeadingAnglePID = new PIDController(SmartDashboard.getNumber("Angle P"), SmartDashboard.getNumber("Angle I"),
 				SmartDashboard.getNumber("Angle D"), 0, headingAbsolute, speedTargetWrite, 0.02) {
 			public void setSetpoint(double a) {
@@ -198,13 +213,17 @@ public class Drivetrain {
 				super.setSetpoint(a);
 			}
 		};
+
+		// Inform PIDControleer that 0 and 2Pi are continuous
 		HeadingAnglePID.setInputRange(0, Math.PI * 2);
 		HeadingAnglePID.setContinuous(true);
 		HeadingAnglePID.setOutputRange(-maxTurnSpeed, maxTurnSpeed);
 
+		// Start PIDUpdate Thread
 		PIDUpdate.start();
 	}
 
+	// Thread to check if smartdashboard has updated PID values and use them if they have been updated
 	Thread PIDUpdate = new Thread(new Runnable() {
 		public void run() {
 			while (true) {
@@ -213,25 +232,28 @@ public class Drivetrain {
 				HeadingAnglePID.setPID(SmartDashboard.getNumber("Angle P"), SmartDashboard.getNumber("Angle I"),
 						SmartDashboard.getNumber("Angle D"));
 				try {
-					Thread.sleep(100);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 	});
-	
-	public double getDistPrimary(){
+
+	// Distance traveled by primary motors, compare against self for difference
+	public double getDistPrimary() {
 		return (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2;
 	}
-	
-	public double getDistStrafe(){
+
+	// Strafe version
+	public double getDistStrafe() {
 		return strafeEncoder.getDistance();
 	}
-	
+
+	// Function to go forward/backwards a distance at a specified power
 	public void goDistPrimary(double dist, double power) {
-		(new Thread (new Runnable () {
-			public void run () {
+		(new Thread(new Runnable() {
+			public void run() {
 				double init = getDistPrimary();
 				setPrimary(Math.abs(power) * ((dist < 0) ? -1 : 1));
 				while (Math.abs(getDistPrimary() - init) <= Math.abs(dist)) {
@@ -245,10 +267,11 @@ public class Drivetrain {
 			}
 		})).start();
 	}
-	
+
+	// function to strafe for distance at power
 	public void goDistStrafe(double dist, double power) {
-		(new Thread (new Runnable () {
-			public void run () {
+		(new Thread(new Runnable() {
+			public void run() {
 				double init = getDistStrafe();
 				setStrafe(Math.abs(power) * ((dist < 0) ? -1 : 1));
 				while (Math.abs(getDistStrafe() - init) <= Math.abs(dist)) {
@@ -263,9 +286,7 @@ public class Drivetrain {
 		})).start();
 	}
 
-	double angleLimit = Double.MAX_VALUE;
-	double strafeLimit = Double.MAX_VALUE;
-	double primaryLimit = Double.MAX_VALUE;
+	// Setters for speedcontroller
 
 	public void setAngleAccelLimit(double a) {
 		angleLimit = a;
@@ -277,31 +298,9 @@ public class Drivetrain {
 
 	public void setPrimaryLimit(double a) {
 		primaryLimit = a;
-		
 	}
-
-	double strafeTargetPower = 0;
 
 	double strafeAbsTime = System.nanoTime();
-
-	public void strafeUpdateLoop() {
-		double currentStrafe = strafeMotorA.get();
-		double exactTime = System.nanoTime();
-		double loopTime = (exactTime - strafeAbsTime) / 1000000000.0;
-		strafeAbsTime = exactTime;
-		double accelLimit = strafeLimit * loopTime;
-		System.out.println(accelLimit);
-		if (currentStrafe - strafeTargetPower > accelLimit) {
-			currentStrafe -= accelLimit;
-		} else if (currentStrafe - strafeTargetPower < -accelLimit) {
-			currentStrafe += accelLimit;
-		} else {
-			currentStrafe = strafeTargetPower;
-		}
-
-		strafeMotorA.set(currentStrafe);
-		strafeMotorB.set(currentStrafe);
-	}
 
 	public void setStrafe(double power) {
 		strafeTargetPower = power;
@@ -312,7 +311,7 @@ public class Drivetrain {
 		HeadingRatePID.enable();
 	}
 
-	//TODO NOT WORKING
+	// TODO NOT WORKING
 	public void turn(double a) {
 		HeadingAnglePID.enable();
 		HeadingAnglePID.setSetpoint(a + gyro.getAngle());
@@ -322,12 +321,17 @@ public class Drivetrain {
 
 	// Begin loop stuff
 
-	double primaryAbsTime = System.nanoTime();
+	double lastTime = System.nanoTime();
 
-	public void primaryUpdateLoop() {
-		double exactTime = System.nanoTime();
-		double loopTime = (exactTime - primaryAbsTime) / 1000000000.0;
-		primaryAbsTime = exactTime;
+	// Must be called to updated motor values
+	// Not in thread for concurrency and performance reasons
+	public void update() {
+		speedController.update();
+
+		double exactTime = System.nanoTime(); //Exact time
+		double loopTime = (exactTime - lastTime) / 1000000000.0;
+		lastTime = exactTime; //Use this loops time to calculate next loops difference
+
 		double loopPrimaryLimit = primaryLimit * loopTime;
 		if (speed - primaryTargetPower > loopPrimaryLimit) {
 			speed -= loopPrimaryLimit;
@@ -336,37 +340,7 @@ public class Drivetrain {
 		} else {
 			speed = primaryTargetPower;
 		}
-		try {
-			Thread.sleep(20);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
 
-	public void motoWriteLoop() {// Set the average of the speed on both sides to compensate for error
-		// in one direction
-		double localSpeed = speed;
-		double a = angleSpeed;
-		if (localSpeed > 1 - Math.abs(a))
-			localSpeed = 1 - Math.abs(a);
-		// to compensate in the other direction
-		else if (localSpeed < Math.abs(a) - 1)
-			localSpeed = Math.abs(a) - 1;
-		
-		// Set the motors corrected for the error
-		leftMotorA.set(localSpeed - a);
-		leftMotorB.set(localSpeed - a);
-		rightMotorA.set(localSpeed + a);
-		rightMotorB.set(localSpeed + a);
-
-	}
-
-	double angleAbsTime = System.nanoTime();
-
-	public void angleUpdateLoop() {
-		double exactTime = System.nanoTime();
-		double loopTime = (exactTime - angleAbsTime) / 1000000000.0;
-		angleAbsTime = exactTime;
 		double loopAngleLimit = angleLimit * loopTime;
 		if (angleSpeed - angleSpeedTarget > loopAngleLimit) {
 			angleSpeed -= loopAngleLimit;
@@ -375,34 +349,42 @@ public class Drivetrain {
 		} else {
 			angleSpeed = angleSpeedTarget;
 		}
-		try {
-			Thread.sleep(20);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+
+		// Strafe update
+		double currentStrafe = strafeMotorA.get();
+		double accelLimit = strafeLimit * loopTime;
+		if (currentStrafe - strafeTargetPower > accelLimit) {
+			currentStrafe -= accelLimit;
+		} else if (currentStrafe - strafeTargetPower < -accelLimit) {
+			currentStrafe += accelLimit;
+		} else {
+			currentStrafe = strafeTargetPower;
 		}
-	}
 
-	// end Loop Stuff
 
-	public void update() {
-		speedController.update();
-		primaryUpdateLoop();
-		angleUpdateLoop();
-		strafeUpdateLoop();
-		motoWriteLoop();
-	}
-	
-	public void setAll(double a) {
-		leftMotorA.set(a);
-		leftMotorB.set(a);
-		rightMotorA.set(a);
-		rightMotorB.set(a);
+		double localSpeed = speed;
+		if (localSpeed > 1 - Math.abs(angleSpeed))
+			localSpeed = 1 - Math.abs(angleSpeed);
+		// to compensate in the other direction
+		else if (localSpeed < Math.abs(angleSpeed) - 1)
+			localSpeed = Math.abs(angleSpeed) - 1;
+
+		strafeMotorA.set(currentStrafe);
+		strafeMotorB.set(currentStrafe);
+		// Set the motors corrected for the error
+		leftMotorA.set(localSpeed - angleSpeed);
+		leftMotorB.set(localSpeed - angleSpeed);
+		rightMotorA.set(localSpeed + angleSpeed);
+		rightMotorB.set(localSpeed + angleSpeed);
 	}
 
 	public void setPrimary(double a) {
 		primaryTargetPower = a;
 	}
 
+	// boolean, represents wether the robot is in state of slowing down in order to enter heading controlled mode from
+	// angular speed controlled mode
+	// used to remove the jerkyness of releaseing angle joystick
 	boolean slowing = false;
 
 	public void setAngleTarget(double stickX) {
