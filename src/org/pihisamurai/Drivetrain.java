@@ -49,29 +49,30 @@ public class Drivetrain {
 	private Gyro gyro;
 
 	// Jaguars (drive motors)
-	public Jaguar leftMotorA;
-	public Jaguar leftMotorB;
-	public Jaguar rightMotorA;
-	public Jaguar rightMotorB;
-	public Jaguar strafeMotorA;
-	public Jaguar strafeMotorB;
+	private Jaguar leftMotorA;
+	private Jaguar leftMotorB;
+	private Jaguar rightMotorA;
+	private Jaguar rightMotorB;
+	private Jaguar strafeMotorA;
+	private Jaguar strafeMotorB;
 
 	// PID Controllers, see WPILib Documentation for how they work
-	private PIDController HeadingRatePID;
-	private PIDController HeadingAnglePID;
+	private PIDController turnRatePID;
+	private PIDController turnAnglePID;
 
 	// Speed controller class controls the below values as a function of box count
-	public SpeedController speedController;
+	SpeedController speedController;
 
-	double strafeTargetPower = 0;
-	double angleSpeedTarget = 0;
-	double angleSpeed = 0;
-	double speed = 0;
+	private double primaryPowerTarget = 0;
+	private double strafePowerTarget = 0;
+	private double angleSpeedTarget = 0;
+	private double angleSpeed = 0;
+	private double primaryPower = 0;
 
 	// Variables used by speed controlle
-	double angleLimit = Double.MAX_VALUE; // amount anglerSpeed can change value per second
-	double strafeLimit = Double.MAX_VALUE; // amount strafe can change value per second
-	double primaryLimit = Double.MAX_VALUE; // amount primarymotors can change value per second
+	private double angleRateChangeRate = Double.MAX_VALUE; // amount anglerSpeed can change value per second
+	private double strafeChangeRate = Double.MAX_VALUE; // amount strafe can change value per second
+	private double primaryChangeRate = Double.MAX_VALUE; // amount primarymotors can change value per second
 
 	public Drivetrain() {
 
@@ -183,7 +184,7 @@ public class Drivetrain {
 			}
 		};
 
-		HeadingRatePID = new PIDController(SmartDashboard.getNumber("Rate P"), SmartDashboard.getNumber("Rate I"),
+		turnRatePID = new PIDController(SmartDashboard.getNumber("Rate P"), SmartDashboard.getNumber("Rate I"),
 				SmartDashboard.getNumber("Rate D"), 0, headingSpeed, motorWrite, 0.02);
 
 		// PID Loop based of orientation
@@ -198,12 +199,12 @@ public class Drivetrain {
 		// take PID functions output and make set headingRatePIDs target
 		PIDOutput speedTargetWrite = new PIDOutput() {
 			public void pidWrite(double a) {
-				HeadingRatePID.setSetpoint(a);
+				turnRatePID.setSetpoint(a);
 			}
 		};
 
 		// Make PID Controller be able to handle inputs not in 0-2Pi range
-		HeadingAnglePID = new PIDController(SmartDashboard.getNumber("Angle P"), SmartDashboard.getNumber("Angle I"),
+		turnAnglePID = new PIDController(SmartDashboard.getNumber("Angle P"), SmartDashboard.getNumber("Angle I"),
 				SmartDashboard.getNumber("Angle D"), 0, headingAbsolute, speedTargetWrite, 0.02) {
 			public void setSetpoint(double a) {
 				while (a > Math.PI * 2)
@@ -215,21 +216,23 @@ public class Drivetrain {
 		};
 
 		// Inform PIDControleer that 0 and 2Pi are continuous
-		HeadingAnglePID.setInputRange(0, Math.PI * 2);
-		HeadingAnglePID.setContinuous(true);
-		HeadingAnglePID.setOutputRange(-maxTurnSpeed, maxTurnSpeed);
+		turnAnglePID.setInputRange(0, Math.PI * 2);
+		turnAnglePID.setContinuous(true);
+		turnAnglePID.setOutputRange(-maxTurnSpeed, maxTurnSpeed);
 
 		// Start PIDUpdate Thread
 		PIDUpdate.start();
+		
+		turnRatePID.enable();
 	}
 
 	// Thread to check if smartdashboard has updated PID values and use them if they have been updated
 	Thread PIDUpdate = new Thread(new Runnable() {
 		public void run() {
 			while (true) {
-				HeadingRatePID.setPID(SmartDashboard.getNumber("Rate P"), SmartDashboard.getNumber("Rate I"),
+				turnRatePID.setPID(SmartDashboard.getNumber("Rate P"), SmartDashboard.getNumber("Rate I"),
 						SmartDashboard.getNumber("Rate D"));
-				HeadingAnglePID.setPID(SmartDashboard.getNumber("Angle P"), SmartDashboard.getNumber("Angle I"),
+				turnAnglePID.setPID(SmartDashboard.getNumber("Angle P"), SmartDashboard.getNumber("Angle I"),
 						SmartDashboard.getNumber("Angle D"));
 				try {
 					Thread.sleep(1000);
@@ -286,40 +289,71 @@ public class Drivetrain {
 		})).start();
 	}
 
-	// Setters for speedcontroller
+	//// Setters for speedcontroller
 
-	public void setAngleAccelLimit(double a) {
-		angleLimit = a;
+	public void setAngleRateChangeRate(double changeRate) {
+		angleRateChangeRate = changeRate;
 	}
 
-	public void setStrafeLimit(double a) {
-		strafeLimit = a;
+	public void setStrafeChangeRate(double changeRate) {
+		strafeChangeRate = changeRate;
 	}
 
-	public void setPrimaryLimit(double a) {
-		primaryLimit = a;
+	public void setPrimaryChangeRate(double changeRate) {
+		primaryChangeRate = changeRate;
 	}
 
-	double strafeAbsTime = System.nanoTime();
+	public void setMaxTurnSpeed(double turnSpeed) {
+		maxTurnSpeed = turnSpeed;
+		turnAnglePID.setOutputRange(-maxTurnSpeed, maxTurnSpeed);
+	}
+	
+	//// Primary Setters
 
+	//Set Primary Power
+	public void setPrimary(double power) {
+		primaryPowerTarget = power;
+	}
+	
+	//Set Strafe power
 	public void setStrafe(double power) {
-		strafeTargetPower = power;
+		strafePowerTarget = power;
 	}
 
-	public void start() {
-		HeadingRatePID.disable();
-		HeadingRatePID.enable();
+	//Turn robot angle (radians)
+	public void turnAngle(double angle) {
+		turnAnglePID.enable();
+		turnAnglePID.setSetpoint(angle + gyro.getAngle());
+	}
+	
+	// boolean, represents wether the robot is in state of slowing down in order to enter heading controlled mode from
+	// angular speed controlled mode
+	// used to remove the jerkyness of releaseing angle joystick
+	boolean slowing = false;
+	
+	//set target spinning speed
+	public void setTurnRate(double turnStrength) {
+		if (Math.abs(turnStrength) < 0.1) {
+			if (!turnAnglePID.isEnable()) {
+				slowing = true;
+				turnAnglePID.setSetpoint(gyro.getAngle());
+				turnAnglePID.enable();
+			} else {
+				if (slowing) {
+					turnAnglePID.setSetpoint(gyro.getAngle());
+					if (Math.abs(gyro.getRate()) < Math.PI * 2 * 0.0001) {
+						slowing = false;
+					}
+				}
+			}
+		} else {
+			slowing = false;
+			turnAnglePID.disable();
+			turnRatePID.setSetpoint(turnStrength * maxTurnSpeed);
+		}
 	}
 
-	// TODO NOT WORKING
-	public void turn(double a) {
-		HeadingAnglePID.enable();
-		HeadingAnglePID.setSetpoint(a + gyro.getAngle());
-	}
-
-	double primaryTargetPower = 0;
-
-	// Begin loop stuff
+	///// Update
 
 	double lastTime = System.nanoTime();
 
@@ -332,19 +366,19 @@ public class Drivetrain {
 		double loopTime = (exactTime - lastTime) / 1000000000.0;
 		lastTime = exactTime; //Use this loops time to calculate next loops difference
 
-		double loopPrimaryLimit = primaryLimit * loopTime;
-		if (speed - primaryTargetPower > loopPrimaryLimit) {
-			speed -= loopPrimaryLimit;
-		} else if (speed - primaryTargetPower < -loopPrimaryLimit) {
-			speed += loopPrimaryLimit;
+		double loopPrimaryLimit = primaryChangeRate * loopTime;
+		if (primaryPower - primaryPowerTarget > loopPrimaryLimit) {
+			primaryPower -= loopPrimaryLimit;
+		} else if (primaryPower - primaryPowerTarget < -loopPrimaryLimit) {
+			primaryPower += loopPrimaryLimit;
 		} else {
-			speed = primaryTargetPower;
+			primaryPower = primaryPowerTarget;
 		}
 
-		double loopAngleLimit = angleLimit * loopTime;
+		double loopAngleLimit = angleRateChangeRate * loopTime;
 		if (angleSpeed - angleSpeedTarget > loopAngleLimit) {
 			angleSpeed -= loopAngleLimit;
-		} else if (speed - angleSpeedTarget < -loopAngleLimit) {
+		} else if (primaryPower - angleSpeedTarget < -loopAngleLimit) {
 			angleSpeed += loopAngleLimit;
 		} else {
 			angleSpeed = angleSpeedTarget;
@@ -352,17 +386,17 @@ public class Drivetrain {
 
 		// Strafe update
 		double currentStrafe = strafeMotorA.get();
-		double accelLimit = strafeLimit * loopTime;
-		if (currentStrafe - strafeTargetPower > accelLimit) {
+		double accelLimit = strafeChangeRate * loopTime;
+		if (currentStrafe - strafePowerTarget > accelLimit) {
 			currentStrafe -= accelLimit;
-		} else if (currentStrafe - strafeTargetPower < -accelLimit) {
+		} else if (currentStrafe - strafePowerTarget < -accelLimit) {
 			currentStrafe += accelLimit;
 		} else {
-			currentStrafe = strafeTargetPower;
+			currentStrafe = strafePowerTarget;
 		}
 
 
-		double localSpeed = speed;
+		double localSpeed = primaryPower;
 		if (localSpeed > 1 - Math.abs(angleSpeed))
 			localSpeed = 1 - Math.abs(angleSpeed);
 		// to compensate in the other direction
@@ -376,40 +410,5 @@ public class Drivetrain {
 		leftMotorB.set(localSpeed - angleSpeed);
 		rightMotorA.set(localSpeed + angleSpeed);
 		rightMotorB.set(localSpeed + angleSpeed);
-	}
-
-	public void setPrimary(double a) {
-		primaryTargetPower = a;
-	}
-
-	// boolean, represents wether the robot is in state of slowing down in order to enter heading controlled mode from
-	// angular speed controlled mode
-	// used to remove the jerkyness of releaseing angle joystick
-	boolean slowing = false;
-
-	public void setAngleTarget(double stickX) {
-		if (Math.abs(stickX) < 0.1) {
-			if (!HeadingAnglePID.isEnable()) {
-				slowing = true;
-				HeadingAnglePID.setSetpoint(gyro.getAngle());
-				HeadingAnglePID.enable();
-			} else {
-				if (slowing) {
-					HeadingAnglePID.setSetpoint(gyro.getAngle());
-					if (Math.abs(gyro.getRate()) < Math.PI * 2 * 0.0001) {
-						slowing = false;
-					}
-				}
-			}
-		} else {
-			slowing = false;
-			HeadingAnglePID.disable();
-			HeadingRatePID.setSetpoint(stickX * maxTurnSpeed);
-		}
-	}
-
-	public void setMaxTurnSpeed(double speed) {
-		maxTurnSpeed = speed;
-		HeadingAnglePID.setOutputRange(-maxTurnSpeed, maxTurnSpeed);
 	}
 }

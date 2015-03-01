@@ -57,9 +57,9 @@ public class SpeedController {
 		double accelLimit =  SmartDashboard.getNumber("Stick change rate " + box + " boxes");
 		double turnAccelLimit = SmartDashboard.getNumber("Angle stick rate " + box + " boxes");
 
-		drivetrain.setPrimaryLimit(accelLimit);
-		drivetrain.setStrafeLimit(999.0);
-		drivetrain.setAngleAccelLimit(turnAccelLimit);
+		drivetrain.setPrimaryChangeRate(accelLimit);
+		drivetrain.setStrafeChangeRate(999.0);
+		drivetrain.setAngleRateChangeRate(turnAccelLimit);
 		
 		drivetrain.setMaxTurnSpeed(turnSpeed*turnSpeedModifier);
 	}

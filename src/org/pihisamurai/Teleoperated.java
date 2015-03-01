@@ -1,6 +1,5 @@
 package org.pihisamurai;
 
-import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Teleoperated {
@@ -18,7 +17,6 @@ public class Teleoperated {
 	}
 
 	public void init() {
-		robot.drivetrain.start();
 	}
 
 	public void run() {
@@ -56,25 +54,25 @@ public class Teleoperated {
 			case Gamepad.POV_UP: // 0
 				break; // Currently Meaningless
 			case Gamepad.POV_UP_RIGHT: // 45
-				robot.drivetrain.turn(1 * Math.PI / 4);
+				robot.drivetrain.turnAngle(1 * Math.PI / 4);
 				break;
 			case Gamepad.POV_RIGHT: // 90
-				robot.drivetrain.turn(2 * Math.PI / 4);
+				robot.drivetrain.turnAngle(2 * Math.PI / 4);
 				break;
 			case Gamepad.POV_DOWN_RIGHT: // 135
-				robot.drivetrain.turn(3 * Math.PI / 4);
+				robot.drivetrain.turnAngle(3 * Math.PI / 4);
 				break;
 			case Gamepad.POV_DOWN: // 180
-				robot.drivetrain.turn(4 * Math.PI / 4);
+				robot.drivetrain.turnAngle(4 * Math.PI / 4);
 				break;
 			case Gamepad.POV_DOWN_LEFT: // 225
-				robot.drivetrain.turn(-3 * Math.PI / 4);
+				robot.drivetrain.turnAngle(-3 * Math.PI / 4);
 				break;
 			case Gamepad.POV_LEFT: // 270
-				robot.drivetrain.turn(-2 * Math.PI / 4);
+				robot.drivetrain.turnAngle(-2 * Math.PI / 4);
 				break;
 			case Gamepad.POV_UP_LEFT: // 315
-				robot.drivetrain.turn(-1 * Math.PI / 4);
+				robot.drivetrain.turnAngle(-1 * Math.PI / 4);
 				break;
 			case Gamepad.POV_OFF: // -1
 				break; // Do nothing
@@ -112,7 +110,7 @@ public class Teleoperated {
 		robot.drivetrain.setPrimary(robot.gamepad1.getRightY() * speedModifier);
 	
 		// Turns the robot in regards to the left stick by the speed multiplier.
-		robot.drivetrain.setAngleTarget(robot.gamepad1.getLeftX());
+		robot.drivetrain.setTurnRate(robot.gamepad1.getLeftX());
 
 		// Prints out the encoder numbers.
 		SmartDashboard.putNumber("Encoder Primary", robot.drivetrain.getDistPrimary());
