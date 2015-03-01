@@ -91,10 +91,7 @@ public class Teleoperated {
 			liftModifier -= 0.25;
 		}
 
-		// Decides which gamepad is pressing the triggers the hardest;
-		// Said gamepad controls the lift.
-		if (Math.abs(robot.gamepad1.getRightTrigger() - robot.gamepad1.getLeftTrigger()) > liftModifier * Math.abs(robot.gamepad2
-				.getRightTrigger() - robot.gamepad2.getLeftTrigger())) {
+		if (Math.abs(robot.gamepad1.getRightTrigger() - robot.gamepad1.getLeftTrigger()) > 0.05) {
 			// For gamepad 1:
 			robot.manipulator.setLiftPower((robot.gamepad1.getRightTrigger() - robot.gamepad1.getLeftTrigger()) * 2);
 		} else {
