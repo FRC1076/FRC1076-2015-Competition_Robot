@@ -117,10 +117,8 @@ public class Robot extends IterativeRobot {
 
 	public void testInit() {
 		System.out.println("Test Mode");
-		test.init();
 	}
 
 	public void testPeriodic() {
-		test.run();
 	}
 }
