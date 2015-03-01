@@ -13,7 +13,6 @@ public class Robot extends IterativeRobot {
 	public Manipulator manipulator;
 
 	public Teleoperated teleop;
-	public Test test;
 	public Autonomous autonomous;
 
 	public Gamepad gamepad1;
@@ -51,7 +50,6 @@ public class Robot extends IterativeRobot {
 		drivetrain = new Drivetrain(this);
 		manipulator = new Manipulator(this);
 		teleop = new Teleoperated(this);
-		test = new Test(this);
 		autonomous = new Autonomous(this);
 		gamepad1 = new Gamepad(0);
 		gamepad2 = new Gamepad(1);
