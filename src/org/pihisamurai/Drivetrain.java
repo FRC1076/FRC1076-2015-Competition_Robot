@@ -304,11 +304,6 @@ public class Drivetrain {
 
 		strafeMotorA.set(currentStrafe);
 		strafeMotorB.set(currentStrafe);
-		/*try {
-			Thread.sleep(20);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}*/
 	}
 
 	public void setStrafe(double power) {
@@ -320,11 +315,7 @@ public class Drivetrain {
 		HeadingRatePID.enable();
 	}
 
-	/**
-	 * In radians.
-	 * 
-	 * @param a
-	 */
+	//TODO NOT WORKING
 	public void turn(double a) {
 		HeadingAnglePID.enable();
 		HeadingAnglePID.setSetpoint(a + gyro.getAngle());
@@ -364,16 +355,7 @@ public class Drivetrain {
 		// to compensate in the other direction
 		else if (localSpeed < Math.abs(a) - 1)
 			localSpeed = Math.abs(a) - 1;
-		// Set a deadzone for the speed
-
-		/*
-		 * if (Math.abs(localSpeed) - Math.abs(a) < 0.15) {
-		 * // Set the speed to zero while in the deadzone
-		 * localSpeed = 0;
-		 * // There's no error because we just want to stop
-		 * a = 0;
-		 * }
-		 */
+		
 		// Set the motors corrected for the error
 		leftMotorA.set(localSpeed - a);
 		leftMotorB.set(localSpeed - a);
@@ -421,10 +403,6 @@ public class Drivetrain {
 	}
 
 	public void setPrimary(double a) {
-		/*robot.ledcontroller.setDriveTrainLeft((a < 0.05) ? ((Math.abs(a) < 0.05) ? LEDcontroller.PROTOCOL_STOP 
-				: LEDcontroller.PROTOCOL_BACKWARD) : LEDcontroller.PROTOCOL_FORWARD);
-		robot.ledcontroller.setDriveTrainRight((a < 0.05) ? ((Math.abs(a) < 0.05) ? LEDcontroller.PROTOCOL_STOP 
-				: LEDcontroller.PROTOCOL_BACKWARD) : LEDcontroller.PROTOCOL_FORWARD);*/
 		primaryTargetPower = a;
 	}
 
