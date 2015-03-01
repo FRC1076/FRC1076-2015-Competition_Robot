@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Manipulator {
 
 	// A "robot" variable to access methods therein:
-	private Robot robot;
+	
 	// For the motor of the lift:
 	private Jaguar LiftMotor;
 	private Encoder encoder;
@@ -29,9 +29,8 @@ public class Manipulator {
 	private DigitalInput limitSwitch = new DigitalInput(8);
 	Servo servo = new Servo(7);
 
-	Manipulator(Robot r) {
+	Manipulator() {
 		// Initialization of variable values:
-		this.robot = r;
 		locked = false;
 		targetPower = 0;
 		LiftMotor = new Jaguar(ELEVATOR_MOTOR_PORT){

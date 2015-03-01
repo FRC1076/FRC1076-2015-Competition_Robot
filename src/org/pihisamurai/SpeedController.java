@@ -4,11 +4,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SpeedController {
 	
-	Robot robot;
+	Drivetrain drivetrain;
 	private int box;
 	
-	SpeedController(Robot robot){
-		this.robot = robot;
+	SpeedController(Drivetrain d){
+		drivetrain = d;
 		
 		SmartDashboard.putNumber("Turn Speed 0 Boxes", 4.0);
 		SmartDashboard.putNumber("Turn Speed 1 Boxes", 4.0);
@@ -57,10 +57,10 @@ public class SpeedController {
 		double accelLimit =  SmartDashboard.getNumber("Stick change rate " + box + " boxes");
 		double turnAccelLimit = SmartDashboard.getNumber("Angle stick rate " + box + " boxes");
 
-		robot.drivetrain.setPrimaryLimit(accelLimit);
-		robot.drivetrain.setStrafeLimit(999.0);
-		robot.drivetrain.setAngleAccelLimit(turnAccelLimit);
+		drivetrain.setPrimaryLimit(accelLimit);
+		drivetrain.setStrafeLimit(999.0);
+		drivetrain.setAngleAccelLimit(turnAccelLimit);
 		
-		robot.drivetrain.setMaxTurnSpeed(turnSpeed*turnSpeedModifier);
+		drivetrain.setMaxTurnSpeed(turnSpeed*turnSpeedModifier);
 	}
 }

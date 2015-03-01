@@ -47,8 +47,8 @@ public class Robot extends IterativeRobot {
 			}
 		}
 
-		drivetrain = new Drivetrain(this);
-		manipulator = new Manipulator(this);
+		drivetrain = new Drivetrain();
+		manipulator = new Manipulator();
 		teleop = new Teleoperated(this);
 		autonomous = new Autonomous(this);
 		gamepad1 = new Gamepad(0);

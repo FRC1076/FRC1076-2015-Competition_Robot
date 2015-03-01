@@ -52,8 +52,6 @@ public class Drivetrain {
 	private PIDController HeadingRatePID;
 	private PIDController HeadingAnglePID;
 
-	private Robot robot;
-
 	public SpeedController speedController;
 
 	double angleSpeedTarget = 0;
@@ -62,10 +60,9 @@ public class Drivetrain {
 
 	private BuiltInAccelerometer accelerometer;
 	
-	public Drivetrain(Robot r) {
-		robot = r;
+	public Drivetrain() {
 
-		speedController = new SpeedController(r);
+		speedController = new SpeedController(this);
 
 		SmartDashboard.putNumber("Angle P", 7);
 		SmartDashboard.putNumber("Angle I", 0);
