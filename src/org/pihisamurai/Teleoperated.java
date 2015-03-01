@@ -1,15 +1,16 @@
 package org.pihisamurai;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Teleoperated {
 
-	// A "robot" variable to access methods therein:
+	// The robot being controlled
 	private Robot robot;
 	// Tracks the primary speed modifiers:
-	double speedModifier = 1;
+	double primaryModifier;
+	double strafeModifier;
+	double turnModifier;
 	// Tracks the lift motor speed modifiers:
-	double liftModifier = 1;
+	double liftModifier;
 
 	public Teleoperated(Robot r) {
 		// Initialization of variable values:
@@ -24,13 +25,13 @@ public class Teleoperated {
 		if(robot.gamepad2.ifButtonAChange() && robot.gamepad2.getButtonA()) {
 			robot.drivetrain.speedController.setBoxCount(0);
 			// Zeros the box count.
-		} if (robot.gamepad1.ifPOVChange() && robot.gamepad1.getPOV() == 0) {
+		} if (robot.gamepad2.ifPOVChange() && robot.gamepad2.getPOV() == 0) {
 			if (robot.drivetrain.speedController.getBoxCount() < 6) {
 				robot.drivetrain.speedController.setBoxCount(
 						robot.drivetrain.speedController.getBoxCount() + 1);
 				// Increases the box count if it is below 6.
 			}
-		} else if (robot.gamepad1.ifPOVChange() && robot.gamepad1.getPOV() == 180) {
+		} else if (robot.gamepad2.ifPOVChange() && robot.gamepad2.getPOV() == 180) {
 			if (robot.drivetrain.speedController.getBoxCount() > 0) {
 				robot.drivetrain.speedController.setBoxCount(
 						robot.drivetrain.speedController.getBoxCount() - 1);
@@ -39,13 +40,17 @@ public class Teleoperated {
 		}
 	
 		// Updates the speed modifier.
-		speedModifier = 0.5;
+		strafeModifier = 0.5;
+		primaryModifier = 0.5;
+		turnModifier = 0.3;
 		if (robot.gamepad1.getButtonRightBack()) {
-			speedModifier += 0.25;
-			// Full speed if the right secondary trigger is pushed.
+			strafeModifier = 0.75;
+			primaryModifier = 0.75;
+			turnModifier = 0.5;
 		} if(robot.gamepad1.getButtonLeftBack()) {
-			speedModifier += 0.25;
-			// Full speed if the left secondary trigger is pushed.
+			strafeModifier = 1;
+			turnModifier = 1;
+			primaryModifier = 1;
 		}
 	
 		// If the D-pad input changed, do one of these turns
@@ -91,6 +96,7 @@ public class Teleoperated {
 			liftModifier -= 0.25;
 		}
 
+		//If driver 1 using elevator do that, if not use secondary controller
 		if (Math.abs(robot.gamepad1.getRightTrigger() - robot.gamepad1.getLeftTrigger()) > 0.05) {
 			// For gamepad 1:
 			robot.manipulator.setLiftPower((robot.gamepad1.getRightTrigger() - robot.gamepad1.getLeftTrigger()) * 2);
@@ -100,17 +106,16 @@ public class Teleoperated {
 		}
 	
 		// Sets the modifier for the turn:
-		robot.drivetrain.speedController.setTurnSpeedModifier(speedModifier);
+		robot.drivetrain.speedController.setTurnSpeedModifier(turnModifier);
 	
 		// Moves the robot in regards to the right stick by the speed multiplier.
-		robot.drivetrain.setStrafe(robot.gamepad1.getRightX() * speedModifier);
-		robot.drivetrain.setPrimary(robot.gamepad1.getRightY() * speedModifier);
+		robot.drivetrain.setStrafe(robot.gamepad1.getRightX() * strafeModifier);
+		robot.drivetrain.setPrimary(robot.gamepad1.getRightY() * primaryModifier);
 	
 		// Turns the robot in regards to the left stick by the speed multiplier.
-		robot.drivetrain.setTurnRate(robot.gamepad1.getLeftX());
-
-		// Prints out the encoder numbers.
-		SmartDashboard.putNumber("Encoder Primary", robot.drivetrain.getDistPrimary());
-		SmartDashboard.putNumber("Encoder Strafe", robot.drivetrain.getDistStrafe());
+		
+		//if(not turning){ TODO make that if
+			robot.drivetrain.setTurnRate(robot.gamepad1.getLeftX());
+		//}
 	}
 }
