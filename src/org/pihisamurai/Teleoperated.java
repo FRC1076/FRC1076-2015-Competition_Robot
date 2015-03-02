@@ -82,7 +82,7 @@ public class Teleoperated {
 			case Gamepad.POV_OFF: // -1
 				break; // Do nothing
 			default:
-				System.out.println("UNKNOWN POV ANGLE: " + robot.gamepad1.getPOV());
+				System.err.println("UNKNOWN POV ANGLE: " + robot.gamepad1.getPOV());
 				break;
 			}
 		}
