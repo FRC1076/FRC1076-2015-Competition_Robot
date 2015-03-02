@@ -18,6 +18,8 @@ public class Robot extends IterativeRobot {
 	public Gamepad gamepad1;
 	public Gamepad gamepad2;
 	
+	private static Robot robot;
+	
     CameraServer server;
 
     int session;
@@ -26,6 +28,8 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		System.out.println("Robot Code Started");
 
+		robot = this;
+		
 		SmartDashboard.putNumber("Autonomous Mode", 1);
 
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
@@ -51,8 +55,6 @@ public class Robot extends IterativeRobot {
 		manipulator = new Manipulator();
 		teleop = new Teleoperated(this);
 		autonomous = new Autonomous(this);
-		gamepad1 = new Gamepad(0);
-		gamepad2 = new Gamepad(1);
 	}
 	
 	Thread camGet = new Thread(new Runnable(){
@@ -70,6 +72,13 @@ public class Robot extends IterativeRobot {
 	        //NIVision.IMAQdxStopAcquisition(session);
 		}
 	});
+	
+	private long modeStart;
+	
+	//Returns time since mode was enabled
+	public long modeTime(){
+		return (System.nanoTime() - modeStart) / 1000000;
+	}
 
 	// The initial function called on start of disabled mode 
 
@@ -87,6 +96,12 @@ public class Robot extends IterativeRobot {
 
 	public void autonomousInit() {
 		System.out.println("Autonomous Mode");
+		
+		modeStart = System.nanoTime();
+		
+		gamepad1 = new GamepadReplay(SmartDashboard.getString("Gamepad File 1"));
+		gamepad2 = new GamepadReplay(SmartDashboard.getString("Gamepad File 2"));
+		
 		autonomous.init((int)SmartDashboard.getNumber("Autonomous Mode"));
 	}
 
@@ -101,6 +116,12 @@ public class Robot extends IterativeRobot {
 
 	public void teleopInit() {
 		System.out.println("Teleoperated Mode");
+
+		modeStart = System.nanoTime();
+		
+		gamepad1 = new GamepadReal(0);
+		gamepad2 = new GamepadReal(1);
+		
 		teleop.init();
 	}
 
@@ -118,5 +139,9 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void testPeriodic() {
+	}
+
+	public static Robot getInstance() {
+		return robot;
 	}
 }
