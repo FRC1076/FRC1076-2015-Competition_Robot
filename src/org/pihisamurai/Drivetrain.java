@@ -325,6 +325,13 @@ public class Drivetrain {
 		turnAnglePID.setSetpoint(angle + gyro.getAngle());
 	}
 	
+	//Function for whether turnAngle is complete
+	
+	public boolean isTurning(){
+		
+		return false;
+	}
+	
 	// boolean, represents wether the robot is in state of slowing down in order to enter heading controlled mode from
 	// angular speed controlled mode
 	// used to remove the jerkyness of releaseing angle joystick

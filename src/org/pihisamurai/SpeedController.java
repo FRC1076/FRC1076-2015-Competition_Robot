@@ -10,13 +10,13 @@ public class SpeedController {
 	SpeedController(Drivetrain d){
 		drivetrain = d;
 		
-		SmartDashboard.putNumber("Turn Speed 0 Boxes", 4.0);
-		SmartDashboard.putNumber("Turn Speed 1 Boxes", 4.0);
-		SmartDashboard.putNumber("Turn Speed 2 Boxes", 3.5);
-		SmartDashboard.putNumber("Turn Speed 3 Boxes", 3.0);
-		SmartDashboard.putNumber("Turn Speed 4 Boxes", 2.0);
-		SmartDashboard.putNumber("Turn Speed 5 Boxes", 1.5);
-		SmartDashboard.putNumber("Turn Speed 6 Boxes", 1.3);
+		SmartDashboard.putNumber("Turn Speed 0 Boxes", 5.0);
+		SmartDashboard.putNumber("Turn Speed 1 Boxes", 5.0);
+		SmartDashboard.putNumber("Turn Speed 2 Boxes", 4.5);
+		SmartDashboard.putNumber("Turn Speed 3 Boxes", 4.0);
+		SmartDashboard.putNumber("Turn Speed 4 Boxes", 3.0);
+		SmartDashboard.putNumber("Turn Speed 5 Boxes", 2.5);
+		SmartDashboard.putNumber("Turn Speed 6 Boxes", 2.3);
 
 		SmartDashboard.putNumber("Stick change rate 0 boxes", 2.0);
 		SmartDashboard.putNumber("Stick change rate 1 boxes", 2.0);

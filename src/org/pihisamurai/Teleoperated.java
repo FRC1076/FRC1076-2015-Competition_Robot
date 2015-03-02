@@ -42,7 +42,7 @@ public class Teleoperated {
 		// Updates the speed modifier.
 		strafeModifier = 0.5;
 		primaryModifier = 0.5;
-		turnModifier = 0.3;
+		turnModifier = 0.35;
 		if (robot.gamepad1.getButtonRightBack()) {
 			strafeModifier = 0.75;
 			primaryModifier = 0.75;
@@ -90,20 +90,17 @@ public class Teleoperated {
 		// The lift motor speed modifier for gamepad 2;
 		// Begins at full speed and is slowed with each button pressed.
 		liftModifier = 1;
-		if(robot.gamepad2.getButtonLeftBack()) {
-			liftModifier -= 0.25;
-		} if(robot.gamepad2.getButtonRightBack()) {
-			liftModifier -= 0.25;
-		}
+		if(robot.gamepad2.getButtonLeftBack())
+			liftModifier = 0.5;
+		if(robot.gamepad2.getButtonRightBack()) 
+			liftModifier = 0.25;
 
 		//If driver 1 using elevator do that, if not use secondary controller
-		if (Math.abs(robot.gamepad1.getRightTrigger() - robot.gamepad1.getLeftTrigger()) > 0.05) {
-			// For gamepad 1:
+		if (Math.abs(robot.gamepad1.getRightTrigger() - robot.gamepad1.getLeftTrigger()) > 0.05) 
 			robot.manipulator.setLiftPower((robot.gamepad1.getRightTrigger() - robot.gamepad1.getLeftTrigger()) * 2);
-		} else {
-			//For gamepad 2:
+		else
 			robot.manipulator.setLiftPower(liftModifier * (robot.gamepad2.getRightTrigger() - robot.gamepad2.getLeftTrigger()) * 2);
-		}
+		
 	
 		// Sets the modifier for the turn:
 		robot.drivetrain.speedController.setTurnSpeedModifier(turnModifier);
