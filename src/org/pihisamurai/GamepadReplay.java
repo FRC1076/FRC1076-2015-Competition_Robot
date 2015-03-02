@@ -74,6 +74,7 @@ public class GamepadReplay implements Gamepad {
 			
 			nextData = scanner.nextLine().split("\\s+");
 			nextTime = Long.parseLong(nextData[0]);
+			readFile();
 		}
 	}
 	
