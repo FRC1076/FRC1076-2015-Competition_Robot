@@ -30,6 +30,7 @@ public class Robot extends IterativeRobot {
 
 		robot = this;
 		
+		SmartDashboard.putString("Gamepad Read File", "");
 		SmartDashboard.putNumber("Autonomous Mode", 1);
 
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
@@ -99,17 +100,25 @@ public class Robot extends IterativeRobot {
 		
 		modeStart = System.nanoTime();
 		
-		gamepad1 = new GamepadReplay(SmartDashboard.getString("Gamepad Read File 1"));
-		gamepad2 = new GamepadReplay(SmartDashboard.getString("Gamepad Read File 2"));
+		gamepad1 = new GamepadReplay(SmartDashboard.getString("Gamepad Read File") + "-driver.gamepad");
+		gamepad2 = new GamepadReplay(SmartDashboard.getString("Gamepad Read File") + "-operator.gamepad");
 		
-		autonomous.init((int)SmartDashboard.getNumber("Autonomous Mode"));
+		
+		teleop.init();
+		
+		//autonomous.init((int)SmartDashboard.getNumber("Autonomous Mode"));
 	}
 
 	// The function called roughly every twenty milliseconds during autonomous mode 
 
 	public void autonomousPeriodic() {
-		autonomous.run();
-		// drivetrain.update();
+		
+		teleop.run();
+		drivetrain.update();
+		gamepad1.update();
+		gamepad2.update();
+		
+		// autonomous.run();
 	}
 
 	// The initial function called on start of teleop
@@ -119,8 +128,8 @@ public class Robot extends IterativeRobot {
 
 		modeStart = System.nanoTime();
 		
-		gamepad1 = new GamepadReal(0, SmartDashboard.getString("Gamepad Write File 1"));
-		gamepad2 = new GamepadReal(1, SmartDashboard.getString("Gamepad Write File 2"));
+		gamepad1 = new GamepadReal(0, SmartDashboard.getString("Gamepad Read File") + "-driver.gamepad");
+		gamepad2 = new GamepadReal(1, SmartDashboard.getString("Gamepad Read File") + "-operator.gamepad");
 		
 		teleop.init();
 	}
