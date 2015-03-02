@@ -53,8 +53,8 @@ public class Robot extends IterativeRobot {
 
 		drivetrain = new Drivetrain();
 		manipulator = new Manipulator();
-		teleop = new Teleoperated(this);
-		autonomous = new Autonomous(this);
+		teleop = new Teleoperated();
+		autonomous = new Autonomous();
 	}
 	
 	Thread camGet = new Thread(new Runnable(){
