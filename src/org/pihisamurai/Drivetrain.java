@@ -218,6 +218,9 @@ public class Drivetrain {
 		turnAnglePID.setInputRange(0, Math.PI * 2);
 		turnAnglePID.setContinuous(true);
 		turnAnglePID.setOutputRange(-maxTurnSpeed, maxTurnSpeed);
+		
+		//Set tolarance for error for turn
+		turnAnglePID.setAbsoluteTolerance(Math.PI*2/16);
 
 		// Start PIDUpdate Thread
 		PIDUpdate.start();
@@ -328,8 +331,7 @@ public class Drivetrain {
 	//Function for whether turnAngle is complete
 	
 	public boolean isTurning(){
-		
-		return false;
+		return turnAnglePID.isEnable() && turnAnglePID.onTarget();
 	}
 	
 	// boolean, represents wether the robot is in state of slowing down in order to enter heading controlled mode from

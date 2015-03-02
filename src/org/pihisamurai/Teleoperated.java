@@ -52,6 +52,8 @@ public class Teleoperated {
 			turnModifier = 1;
 			primaryModifier = 1;
 		}
+		
+		boolean stopTurn = false;
 	
 		// If the D-pad input changed, do one of these turns
 		if (robot.gamepad1.ifPOVChange()) {
@@ -80,6 +82,7 @@ public class Teleoperated {
 				robot.drivetrain.turnAngle(-1 * Math.PI / 4);
 				break;
 			case Gamepad.POV_OFF: // -1
+				stopTurn = true; //If release POV stop turning
 				break; // Do nothing
 			default:
 				System.err.println("UNKNOWN POV ANGLE: " + robot.gamepad1.getPOV());
@@ -111,8 +114,7 @@ public class Teleoperated {
 	
 		// Turns the robot in regards to the left stick by the speed multiplier.
 		
-		//if(not turning){ TODO make that if
+		if(stopTurn || !robot.drivetrain.isTurning())
 			robot.drivetrain.setTurnRate(robot.gamepad1.getLeftX());
-		//}
 	}
 }
