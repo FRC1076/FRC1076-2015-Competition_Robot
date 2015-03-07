@@ -414,8 +414,7 @@ public class Drivetrain {
 		strafeMotorA.set(currentStrafe);
 		strafeMotorB.set(currentStrafe);
 		// Set the motors corrected for the error
-		leftMotorA.set(localSpeed - angleSpeed);
-		leftMotorB.set(localSpeed - angleSpeed);
+		leftMotorA.set(localSpeed - angleSpeed); leftMotorB.set(localSpeed - angleSpeed);
 		rightMotorA.set(localSpeed + angleSpeed);
 		rightMotorB.set(localSpeed + angleSpeed);
 	}

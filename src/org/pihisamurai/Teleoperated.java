@@ -43,14 +43,15 @@ public class Teleoperated {
 		strafeModifier = 0.5;
 		primaryModifier = 0.5;
 		turnModifier = 0.35;
-		if (robot.gamepad1.getButtonRightBack()) {
+		if (robot.gamepad1.getButtonLeftBack()) {
 			strafeModifier = 0.75;
 			primaryModifier = 0.75;
 			turnModifier = 0.5;
-		} if(robot.gamepad1.getButtonLeftBack()) {
-			strafeModifier = 1;
-			turnModifier = 1;
-			primaryModifier = 1;
+		} 
+		if(robot.gamepad1.getButtonRightBack()) {
+			strafeModifier = .9;
+			turnModifier = .9;
+			primaryModifier = .9;
 		}
 		
 		boolean stopTurn = false;
@@ -114,7 +115,7 @@ public class Teleoperated {
 	
 		// Turns the robot in regards to the left stick by the speed multiplier.
 		
-		if(stopTurn || !robot.drivetrain.isTurning())
+		if(!stopTurn || !robot.drivetrain.isTurning())
 			robot.drivetrain.setTurnRate(robot.gamepad1.getLeftX());
 	}
 }

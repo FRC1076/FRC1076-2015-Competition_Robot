@@ -28,7 +28,8 @@ public class Manipulator {
 	public void setLiftPower(double power) {
 		power *= 0.7;
 
-		if (Math.abs(power) < 0.1) {
+		if (Math.abs(power) < 0.05) {
+			LiftMotor.set(0);
 		} else {
 			LiftMotor.set(power);
 		}
