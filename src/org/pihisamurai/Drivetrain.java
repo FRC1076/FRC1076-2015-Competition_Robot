@@ -48,12 +48,12 @@ public class Drivetrain {
 	private Gyro gyro;
 
 	// Jaguars (drive motors)
-	private Jaguar leftMotorA;
-	private Jaguar leftMotorB;
-	private Jaguar rightMotorA;
-	private Jaguar rightMotorB;
-	private Jaguar strafeMotorA;
-	private Jaguar strafeMotorB;
+	Jaguar leftMotorA;
+	Jaguar leftMotorB;
+	Jaguar rightMotorA;
+	Jaguar rightMotorB;
+	Jaguar strafeMotorA;
+	Jaguar strafeMotorB;
 
 	// PID Controllers, see WPILib Documentation for how they work
 	private PIDController turnRatePID;
