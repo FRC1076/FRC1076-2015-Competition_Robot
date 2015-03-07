@@ -28,7 +28,7 @@ public class Drivetrain {
 	private static final int STRAFE_MOTOR_A_PORT = 4;
 	private static final int STRAFE_MOTOR_B_PORT = 5;
 
-	// Analoginput port for gyro
+	// Analog input port for gyro
 	private static final int GYRO_PORT = 0;
 
 	// Circumference of wheel, modified by gear ratio divided by number of pulses in one rotation of encoder
@@ -66,6 +66,7 @@ public class Drivetrain {
 	private double strafePowerTarget = 0;
 	private double angleSpeedTarget = 0;
 	private double angleSpeed = 0;
+	/** main drive motor power */
 	private double primaryPower = 0;
 
 	// Variables used by speed controlle
@@ -402,20 +403,27 @@ public class Drivetrain {
 		} else {
 			currentStrafe = strafePowerTarget;
 		}
+				//set strafe motors' power
+		strafeMotorA.set(currentStrafe); 
+		strafeMotorB.set(currentStrafe);
 
-
+			//temp var to hold power of motors
 		double localSpeed = primaryPower;
-		if (localSpeed > 1 - Math.abs(angleSpeed))
+		if (localSpeed > 1 - Math.abs(angleSpeed)) // local speed cannot be higher than 1 - angle speed
 			localSpeed = 1 - Math.abs(angleSpeed);
 		// to compensate in the other direction
-		else if (localSpeed < Math.abs(angleSpeed) - 1)
+		else if (localSpeed < Math.abs(angleSpeed) - 1) // local speed connot be lower than angle speed - 1
 			localSpeed = Math.abs(angleSpeed) - 1;
 
-		strafeMotorA.set(currentStrafe);
-		strafeMotorB.set(currentStrafe);
+		
+		
 		// Set the motors corrected for the error
-		leftMotorA.set(localSpeed - angleSpeed); leftMotorB.set(localSpeed - angleSpeed);
-		rightMotorA.set(localSpeed + angleSpeed);
-		rightMotorB.set(localSpeed + angleSpeed);
+		double motL = localSpeed - angleSpeed;  // maybe something like this? (angleSpeed > 0 ? 10 : 2);
+		double motR = localSpeed + angleSpeed;
+		leftMotorA.set(motL);  leftMotorB.set(motL);
+		rightMotorA.set(motR); rightMotorB.set(motR);
+		
+		
+
 	}
 }

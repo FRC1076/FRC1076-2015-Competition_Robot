@@ -43,15 +43,15 @@ public class Teleoperated {
 		strafeModifier = 0.5;
 		primaryModifier = 0.5;
 		turnModifier = 0.35;
-		if (robot.gamepad1.getButtonLeftBack()) {
+		if (robot.gamepad1.getButtonLeftBack()) {// want to go slightly faster
 			strafeModifier = 0.75;
 			primaryModifier = 0.75;
 			turnModifier = 0.5;
 		} 
-		if(robot.gamepad1.getButtonRightBack()) {
+		if(robot.gamepad1.getButtonRightBack()) {// want to go MUCH faster
 			strafeModifier = .9;
-			turnModifier = .9;
 			primaryModifier = .9;
+			turnModifier = .6;
 		}
 		
 		boolean stopTurn = false;
