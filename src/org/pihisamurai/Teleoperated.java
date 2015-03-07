@@ -12,9 +12,9 @@ public class Teleoperated {
 	// Tracks the lift motor speed modifiers:
 	double liftModifier;
 
-	public Teleoperated() {
+	public Teleoperated(Robot r) {
 		// Initialization of variable values:
-		this.robot = Robot.getInstance();
+		this.robot = r;
 	}
 
 	public void init() {

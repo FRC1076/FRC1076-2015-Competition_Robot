@@ -9,8 +9,8 @@ public class Autonomous {
 	AutonomousStrafe autonomousStrafe;
 	AutonomousTotes autonomousTotes;
 
-	public Autonomous() {
-		this.robot = Robot.getInstance();
+	public Autonomous(Robot r) {
+		this.robot = r;
 		autonomousNothing = new AutonomousNothing(robot);
 		autnomousForward = new AutonomousForward(robot);
 		autonomousStrafe = new AutonomousStrafe(robot);
