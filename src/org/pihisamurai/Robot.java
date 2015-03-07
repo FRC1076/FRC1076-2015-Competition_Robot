@@ -99,8 +99,8 @@ public class Robot extends IterativeRobot {
 		
 		modeStart = System.nanoTime();
 		
-		gamepad1 = new GamepadReplay(SmartDashboard.getString("Gamepad Read File 1"));
-		gamepad2 = new GamepadReplay(SmartDashboard.getString("Gamepad Read File 2"));
+		gamepad1 = new GamepadReplay(SmartDashboard.getString("Gamepad File 1"));
+		gamepad2 = new GamepadReplay(SmartDashboard.getString("Gamepad File 2"));
 		
 		autonomous.init((int)SmartDashboard.getNumber("Autonomous Mode"));
 	}
@@ -119,8 +119,8 @@ public class Robot extends IterativeRobot {
 
 		modeStart = System.nanoTime();
 		
-		gamepad1 = new GamepadReal(0, SmartDashboard.getString("Gamepad Write File 1"));
-		gamepad2 = new GamepadReal(1, SmartDashboard.getString("Gamepad Write File 2"));
+		gamepad1 = new GamepadReal(0);
+		gamepad2 = new GamepadReal(1);
 		
 		teleop.init();
 	}
