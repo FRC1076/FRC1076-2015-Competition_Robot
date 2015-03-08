@@ -364,7 +364,7 @@ public class Drivetrain {
 
 	///// Update
 
-	double lastTime = System.nanoTime();
+	private double lastTime = System.nanoTime();
 
 	// Must be called to updated motor values
 	// Not in thread for concurrency and performance reasons
@@ -409,21 +409,18 @@ public class Drivetrain {
 
 			//temp var to hold power of motors
 		double localSpeed = primaryPower;
-		if (localSpeed > 1 - Math.abs(angleSpeed)) // local speed cannot be higher than 1 - angle speed
-			localSpeed = 1 - Math.abs(angleSpeed);
-		// to compensate in the other direction
-		else if (localSpeed < Math.abs(angleSpeed) - 1) // local speed connot be lower than angle speed - 1
-			localSpeed = Math.abs(angleSpeed) - 1;
-
+		double localAngleSpeed = angleSpeed;
 		
+		if(Math.abs(localSpeed)+Math.abs(localAngleSpeed) > 1){
+			double div = primaryPower+angleSpeed;
+			localSpeed /= div;
+			localAngleSpeed /= div;
+		}
 		
 		// Set the motors corrected for the error
-		double motL = localSpeed - angleSpeed;  // maybe something like this? (angleSpeed > 0 ? 10 : 2);
-		double motR = localSpeed + angleSpeed;
-		leftMotorA.set(motL);  leftMotorB.set(motL);
-		rightMotorA.set(motR); rightMotorB.set(motR);
-		
-		
-
+		leftMotorA.set(localSpeed - angleSpeed);
+		leftMotorB.set(localSpeed - angleSpeed);
+		rightMotorA.set(localSpeed + angleSpeed);
+		rightMotorB.set(localSpeed + angleSpeed);
 	}
 }
