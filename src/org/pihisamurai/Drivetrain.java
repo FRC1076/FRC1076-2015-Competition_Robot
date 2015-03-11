@@ -411,8 +411,8 @@ public class Drivetrain {
 		double localSpeed = primaryPower;
 		double localAngleSpeed = angleSpeed;
 		
-		if(Math.abs(localSpeed)+Math.abs(localAngleSpeed) > 1){
-			double div = primaryPower+angleSpeed;
+		if(Math.abs(localSpeed) + Math.abs(localAngleSpeed) > 1){
+			double div = Math.abs(primaryPower) + Math.abs(angleSpeed);
 			localSpeed /= div;
 			localAngleSpeed /= div;
 		}

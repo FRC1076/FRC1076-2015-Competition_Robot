@@ -99,23 +99,27 @@ public class Robot extends IterativeRobot {
 
 	// The initial function called on start of autonomous mode 
 
+	long start = 0;
 	public void autonomousInit() {
 		System.out.println("Autonomous Mode");
 
 		modeStart = System.nanoTime();
 		gamepad1 = new GamepadReplay(SmartDashboard.getString("Gamepad Read File") + "-driver.gamepad");
 		gamepad2 = new GamepadReplay(SmartDashboard.getString("Gamepad Read File") + "-operator.gamepad");
-
+		teleop.init();
 	}
 
 	// The function called roughly every twenty milliseconds during autonomous mode 
 
 	public void autonomousPeriodic() {
-		teleop.run();
+		if (15000 > this.getInstance().modeTime()) {
+			teleop.run();
 
-		gamepad1.update();
-		gamepad2.update();
-		
+			gamepad1.update();
+			gamepad2.update();
+
+			drivetrain.update();
+		}
 	}
 
 	// The initial function called on start of teleop
@@ -124,8 +128,8 @@ public class Robot extends IterativeRobot {
 		System.out.println("Teleoperated Mode");
 		modeStart = System.nanoTime();
 
-		gamepad1 = new GamepadReal(0, SmartDashboard.getString("Gamepad Read File") + "-driver.gamepad");
-		gamepad2 = new GamepadReal(1, SmartDashboard.getString("Gamepad Read File") + "-operator.gamepad");
+		gamepad1 = new GamepadReal(0);
+		gamepad2 = new GamepadReal(1);
 		teleop.init();
 	}
 
@@ -137,8 +141,7 @@ public class Robot extends IterativeRobot {
 		gamepad1.update();
 		gamepad2.update();
 
-		
-		//drivetrain.update();
+		drivetrain.update();
 	}
 
 	public void testInit() {
@@ -154,8 +157,9 @@ public class Robot extends IterativeRobot {
 	public void testPeriodic() {
 		teleop.run();
 		
-
 		gamepad1.update();
 		gamepad2.update();
+
+		drivetrain.update();
 	}
 }
