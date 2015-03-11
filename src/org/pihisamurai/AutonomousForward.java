@@ -1,6 +1,5 @@
 package org.pihisamurai;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutonomousForward {
 
@@ -12,11 +11,19 @@ public class AutonomousForward {
 		this.robot = robot;
 	}
 
+	
+	public void setAll(double a) {
+		robot.drivetrain.leftMotorA.set(a);
+		robot.drivetrain.leftMotorB.set(a);
+		robot.drivetrain.rightMotorA.set(a);
+		robot.drivetrain.rightMotorB.set(a);
+	}
+
 	public void run() {
 		if ((System.nanoTime() / 1000000000) - time > 5){
-			robot.drivetrain.setAll(0);
+			setAll(0);
 		} else {
-			robot.drivetrain.setAll(-0.5);
+			setAll(-0.5);
 		}
 		// robot.drivetrain.update();
 	}

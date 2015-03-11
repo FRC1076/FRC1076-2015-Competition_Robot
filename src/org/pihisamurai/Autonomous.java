@@ -11,10 +11,10 @@ public class Autonomous {
 
 	public Autonomous(Robot r) {
 		this.robot = r;
-		autonomousNothing = new AutonomousNothing(r);
-		autnomousForward = new AutonomousForward(r);
-		autonomousStrafe = new AutonomousStrafe(r);
-		autonomousTotes = new AutonomousTotes(r);
+		autonomousNothing = new AutonomousNothing(robot);
+		autnomousForward = new AutonomousForward(robot);
+		autonomousStrafe = new AutonomousStrafe(robot);
+		autonomousTotes = new AutonomousTotes(robot);
 	}
 
 	public void run() {

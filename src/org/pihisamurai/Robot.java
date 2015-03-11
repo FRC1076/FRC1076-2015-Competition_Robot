@@ -13,14 +13,10 @@ public class Robot extends IterativeRobot {
 	public Manipulator manipulator;
 
 	public Teleoperated teleop;
-	public Test test;
 	public Autonomous autonomous;
-	public Disabled disabled;
 
 	public Gamepad gamepad1;
 	public Gamepad gamepad2;
-	
-	public LEDcontroller ledcontroller;
 	
     CameraServer server;
 
@@ -35,14 +31,14 @@ public class Robot extends IterativeRobot {
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 		try {
 			// The camera name (ex.: "cam0") can be found through the roborio web interface
-			session = NIVision.IMAQdxOpenCamera("cam0",
+			session = NIVision.IMAQdxOpenCamera("cam1",
 					NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 			NIVision.IMAQdxConfigureGrab(session);
 			camGet.start();
 		} catch (Exception e) {
 			try {
 				// The camera name (ex.: "cam1") can be found through the roborio web interface
-				session = NIVision.IMAQdxOpenCamera("cam1",
+				session = NIVision.IMAQdxOpenCamera("cam0",
 						NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 				NIVision.IMAQdxConfigureGrab(session);
 				camGet.start();
@@ -51,15 +47,12 @@ public class Robot extends IterativeRobot {
 			}
 		}
 
-		drivetrain = new Drivetrain(this);
-		manipulator = new Manipulator(this);
+		drivetrain = new Drivetrain();
+		manipulator = new Manipulator();
 		teleop = new Teleoperated(this);
-		test = new Test(this);
 		autonomous = new Autonomous(this);
-		disabled = new Disabled(this);
 		gamepad1 = new Gamepad(0);
 		gamepad2 = new Gamepad(1);
-		ledcontroller = new LEDcontroller(this);
 	}
 	
 	Thread camGet = new Thread(new Runnable(){
@@ -82,15 +75,12 @@ public class Robot extends IterativeRobot {
 
 	public void disabledInit() {
 		System.out.println("Robot Disabled");
-		ledcontroller.disable();
-		assert disabled != null;
-		disabled.init();
 	}
 
 	// The function called roughly every twenty milliseconds during disabled mode 
 
 	public void disabledPeriodic() {
-		disabled.run();
+		
 	}
 
 	// The initial function called on start of autonomous mode 
@@ -125,10 +115,8 @@ public class Robot extends IterativeRobot {
 
 	public void testInit() {
 		System.out.println("Test Mode");
-		test.init();
 	}
 
 	public void testPeriodic() {
-		test.run();
 	}
 }

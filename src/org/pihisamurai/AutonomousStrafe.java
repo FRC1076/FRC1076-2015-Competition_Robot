@@ -1,6 +1,5 @@
 package org.pihisamurai;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutonomousStrafe {
 
