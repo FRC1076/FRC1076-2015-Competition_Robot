@@ -1,14 +1,9 @@
 package org.pihisamurai;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.ArrayList;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.LinkedList;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -41,25 +36,23 @@ public class GamepadReal implements Gamepad {
 	private boolean[] lastPress;
 	private int lastPOV;
 
-	private Writer writer = null;
+	private String filePath = null;
+
+	// An array-list of all gamepad inputs over time
+	private LinkedList<Object[]> data;
 
 	GamepadReal(int port) {
 		// Initialization of variable values:
 		this.port = port;
 		driverStation = DriverStation.getInstance();
-		lastPress = new boolean[] { false, false, false, false, false, false, false, false, false, false, false };
+		lastPress = new boolean[] { false, false, false, false, false, false, false, false, false, false, false, false };
 		lastPOV = -1;
 	}
 
 	GamepadReal(int port, String save) {
 		this(port);
-		try {
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream( System.getProperty("user.home") + "/" +  save), "utf-8"));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		data = new LinkedList<Object[]>();
+		filePath = System.getProperty("user.home") + "/" + save;
 	}
 
 	public int getPOV() {
@@ -90,7 +83,7 @@ public class GamepadReal implements Gamepad {
 		return getRawAxis(AXIS_LEFT_TRIGGER);
 	}
 
-	private double getRawAxis(int axis) {
+	private double getRawAxis(byte axis) {
 		return driverStation.getStickAxis(port, axis);
 	}
 
@@ -141,144 +134,84 @@ public class GamepadReal implements Gamepad {
 	// Functions to check if the input has changed since last update.
 
 	public boolean ifButtonAChange() {
-		if (getNumberedButton(BUTTON_A) != lastPress[BUTTON_A]) {
-			return true;
-		}
-		return false;
+		return getNumberedButton(BUTTON_A) != lastPress[BUTTON_A];
 	}
 
 	public boolean ifButtonBChange() {
-		if (getNumberedButton(BUTTON_B) != lastPress[BUTTON_B]) {
-			return true;
-		}
-		return false;
+		return getNumberedButton(BUTTON_B) != lastPress[BUTTON_B];
 	}
 
 	public boolean ifButtonXChange() {
-		if (getNumberedButton(BUTTON_X) != lastPress[BUTTON_X]) {
-			return true;
-		}
-		return false;
+		return getNumberedButton(BUTTON_X) != lastPress[BUTTON_X];
 	}
 
 	public boolean ifButtonYChange() {
-		if (getNumberedButton(BUTTON_Y) != lastPress[BUTTON_Y]) {
-			return true;
-		}
-		return false;
+		return getNumberedButton(BUTTON_Y) != lastPress[BUTTON_Y];
 	}
 
 	public boolean ifLeftBackChange() {
-		if (getNumberedButton(BUTTON_LB) != lastPress[BUTTON_LB]) {
-			return true;
-		}
-		return false;
+		return getNumberedButton(BUTTON_LB) != lastPress[BUTTON_LB];
 	}
 
 	public boolean ifRightBackChange() {
-		if (getNumberedButton(BUTTON_RB) != lastPress[BUTTON_RB]) {
-			return true;
-		}
-		return false;
+		return getNumberedButton(BUTTON_RB) != lastPress[BUTTON_RB];
 	}
 
 	public boolean ifButtonBackChange() {
-		if (getNumberedButton(BUTTON_BACK) != lastPress[BUTTON_BACK]) {
-			return true;
-		}
-		return false;
+		return getNumberedButton(BUTTON_BACK) != lastPress[BUTTON_BACK];
 	}
 
 	public boolean ifButtonLeftStickChange() {
-		if (getNumberedButton(BUTTON_LEFT_STICK_PUSH) != lastPress[BUTTON_LEFT_STICK_PUSH]) {
-			return true;
-		}
-		return false;
+		return getNumberedButton(BUTTON_LEFT_STICK_PUSH) != lastPress[BUTTON_LEFT_STICK_PUSH];
 	}
 
 	public boolean ifButtonRightStickChange() {
-		if (getNumberedButton(BUTTON_RIGHT_STICK_PUSH) != lastPress[BUTTON_RIGHT_STICK_PUSH]) {
-			return true;
-		}
-		return false;
+		return getNumberedButton(BUTTON_RIGHT_STICK_PUSH) != lastPress[BUTTON_RIGHT_STICK_PUSH];
 	}
 
 	public boolean ifPOVChange() {
-		if (this.getPOV() != lastPOV) {
-			return true;
-		}
-		return false;
+		return this.getPOV() != lastPOV;
 	}
-	
-	String temp;
-	ArrayList<Object> commandChain = new ArrayList();
+
 	// Updates the array for the gamepad:
 	public void update() {
 		for (byte i = 1; i < 11; i++) {
 			lastPress[i] = getNumberedButton(i);
 		}
 		lastPOV = this.getPOV();
-		/**
-		if(writer != null && Robot.getInstance().modeTime() > 15000) {
+
+		if (data != null) {
+			Object[] temp = new Object[20];
+			temp[0] = Robot.getInstance().modeTime();
+			temp[1] = getPOV();
+			for(byte i = 1; i <= 10; i++) {
+				temp[i + 1] = getNumberedButton(i);
+			}
+			for(byte i = 0; i <= 6; i++) {
+				temp[i + 12] = getRawAxis(i);
+			}
+			data.add(temp);
+		}
+		if (filePath != null && data != null && Robot.getInstance().modeTime() >= 15200) {
+			Serializable writeObj = data;
+			data = null;
 			try {
-				
-				writer.close();
-			} catch (IOException e) {
-				// catch block
+				(new Thread(new Runnable() {
+					public void run() {
+						try {
+							ObjectOutputStream oos;
+							oos = new ObjectOutputStream(new FileOutputStream(filePath));
+							oos.writeObject(writeObj);
+							oos.close();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				})).start();
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			writer = null;
+
 		}
-		*/
-		/**
-		if(writer != null){
-		    try {
-				writer.write(Robot.getInstance().modeTime() + "");
-				writer.write(" " + getPOV());
-				for(byte i = 1; i < 11; i++)
-				writer.write(" " + getNumberedButton(i));
-				for(byte i = 0; i < 6; i++)
-					writer.write(" " + getRawAxis(i));
-				writer.write("\n");
-				writer.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		*/
-		
-		if(writer!=null)
-		{
-			//Arraylist
-			temp = Robot.getInstance().modeTime() + " " + getPOV() + " ";
-			for(byte i = 1; i < 11; i++)
-			{
-				temp += getNumberedButton(i) + " ";
-			}
-			for(byte j = 1; j < 6; j++)
-			{
-				temp += getRawAxis(j) + " ";
-			}
-			temp = temp.substring(0, temp.length()-2);
-			//temp += "\n";
-			
-			commandChain.add(temp);
-			//end of string and arraylist
-		}
-		
-		if(writer != null && Robot.getInstance().modeTime() >= 15000)
-		{
-			try 
-			{
-			for(int i = 0; i <= commandChain.size(); i++)
-			{
-				writer.write((String) commandChain.get(i));
-			}
-			writer.close();
-			}
-			catch(Exception e) {e.printStackTrace();}
-			writer = null;
-		}
-		
 	}
 }
