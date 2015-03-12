@@ -1,9 +1,5 @@
 package org.pihisamurai;
 
-import com.ni.vision.NIVision;
-import com.ni.vision.NIVision.Image;
-
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -17,12 +13,9 @@ public class Robot extends IterativeRobot {
 	public Gamepad gamepad1;
 	public Gamepad gamepad2;
 	
-	private static Robot robot;
+	public LEDController ledController;
 	
-    CameraServer server;
-
-    int session;
-    Image frame;
+	private static Robot robot;
 
 	private long modeStart;
 	
@@ -45,46 +38,13 @@ public class Robot extends IterativeRobot {
 		
 		System.out.println("Robot Code Started");
 
-		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
-		try {
-			// The camera name (ex.: "cam0") can be found through the roborio web interface
-			session = NIVision.IMAQdxOpenCamera("cam1",
-					NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-			NIVision.IMAQdxConfigureGrab(session);
-			camGet.start();
-		} catch (Exception e) {
-			try {
-				// The camera name (ex.: "cam1") can be found through the roborio web interface
-				session = NIVision.IMAQdxOpenCamera("cam0",
-						NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-				NIVision.IMAQdxConfigureGrab(session);
-				camGet.start();
-			} catch (Exception x) {
-				x.printStackTrace();
-			}
-		}
-
+		ledController = new LEDController();
+		
 		drivetrain = new Drivetrain();
 		manipulator = new Manipulator();
-		teleop = new Teleoperated(this);
+		teleop = new Teleoperated();
 	}
 	
-	Thread camGet = new Thread(new Runnable(){
-		public void run() {
-	        NIVision.IMAQdxStartAcquisition(session);
-			while(true){
-		        NIVision.IMAQdxGrab(session, frame, 1);
-		        CameraServer.getInstance().setImage(frame);
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-	        //NIVision.IMAQdxStopAcquisition(session);
-		}
-	});
-
 	// The initial function called on start of disabled mode 
 
 	public void disabledInit() {
@@ -98,8 +58,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	// The initial function called on start of autonomous mode 
-
-	long start = 0;
+	
 	public void autonomousInit() {
 		System.out.println("Autonomous Mode");
 
@@ -113,12 +72,7 @@ public class Robot extends IterativeRobot {
 
 	public void autonomousPeriodic() {
 		if (15000 > this.getInstance().modeTime()) {
-			teleop.run();
-
-			gamepad1.update();
-			gamepad2.update();
-
-			drivetrain.update();
+			 teleopPeriodic();
 		}
 	}
 
@@ -137,11 +91,10 @@ public class Robot extends IterativeRobot {
 
 	public void teleopPeriodic() {
 		teleop.run();
-
 		gamepad1.update();
 		gamepad2.update();
-
 		drivetrain.update();
+		ledController.update();
 	}
 
 	public void testInit() {
@@ -155,11 +108,6 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void testPeriodic() {
-		teleop.run();
-		
-		gamepad1.update();
-		gamepad2.update();
-
-		drivetrain.update();
+		 teleopPeriodic();
 	}
 }

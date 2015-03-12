@@ -28,6 +28,8 @@ public class Manipulator {
 	public void setLiftPower(double power) {
 		power *= 0.7;
 
+		Robot.getInstance().ledController.setLiftLED(power);
+		
 		if (Math.abs(power) < 0.05) {
 			LiftMotor.set(0);
 		} else {

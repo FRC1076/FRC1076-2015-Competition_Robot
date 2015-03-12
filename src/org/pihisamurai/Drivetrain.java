@@ -418,8 +418,11 @@ public class Drivetrain {
 		}
 		
 		// Set the motors corrected for the error
+
+		Robot.getInstance().ledController.setLeftLED(localSpeed - angleSpeed);
 		leftMotorA.set(localSpeed - angleSpeed);
 		leftMotorB.set(localSpeed - angleSpeed);
+		Robot.getInstance().ledController.setRightLED(localSpeed + angleSpeed);
 		rightMotorA.set(localSpeed + angleSpeed);
 		rightMotorB.set(localSpeed + angleSpeed);
 	}
